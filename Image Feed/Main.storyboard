@@ -198,6 +198,7 @@
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="tableView" destination="iRU-Bc-UFV" id="Bvs-5l-xTo"/>
+                        <segue destination="abN-pS-HpH" kind="show" identifier="ShowSingleImage" id="zaP-sX-WAB"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xMV-Uv-dB3" sceneMemberID="firstResponder"/>
@@ -227,6 +228,36 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8qD-k5-Qbp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="762.59541984732823" y="-28.169014084507044"/>
+        </scene>
+        <!--Single Image View Controller-->
+        <scene sceneID="j0V-0h-cYE">
+            <objects>
+                <viewController id="abN-pS-HpH" customClass="SingleImageViewController" customModule="Image_Feed" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="MFD-m0-6DP">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="OXg-g5-MbR">
+                                <rect key="frame" x="0.0" y="103" width="393" height="666"/>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="UGH-Zk-Fh8"/>
+                        <color key="backgroundColor" name="YP Black"/>
+                        <constraints>
+                            <constraint firstItem="OXg-g5-MbR" firstAttribute="leading" secondItem="UGH-Zk-Fh8" secondAttribute="leading" id="26p-sK-Pn0"/>
+                            <constraint firstItem="OXg-g5-MbR" firstAttribute="top" secondItem="UGH-Zk-Fh8" secondAttribute="top" id="L9g-7q-ahj"/>
+                            <constraint firstItem="UGH-Zk-Fh8" firstAttribute="bottom" secondItem="OXg-g5-MbR" secondAttribute="bottom" id="XL8-kc-dF1"/>
+                            <constraint firstItem="UGH-Zk-Fh8" firstAttribute="trailing" secondItem="OXg-g5-MbR" secondAttribute="trailing" id="jvB-OE-OoJ"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="wi1-VX-DxU"/>
+                    <connections>
+                        <outlet property="imageView" destination="OXg-g5-MbR" id="8Pv-Ts-yYh"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rFL-Mx-BOJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2748.8549618320608" y="-28.169014084507044"/>
         </scene>
     </scenes>
     <resources>
