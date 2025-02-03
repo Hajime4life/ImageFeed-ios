@@ -5,14 +5,6 @@ final class ImagesListViewController: UIViewController {
     // MARK: - Outlets
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var imageView: UIImageView!
-
-    // MARK: - Public Properties
-    var image: UIImage? {
-        didSet {
-            guard isViewLoaded else { return }
-            imageView.image = image
-        }
-    }
     
     // MARK: - Private Properties
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
