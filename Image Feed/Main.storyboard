@@ -177,8 +177,8 @@
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </imageView>
-                                    <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Oth-2X-Wpu" userLabel="share">
-                                        <rect key="frame" x="171" y="756" width="51" height="51"/>
+                                    <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Oth-2X-Wpu" userLabel="share">
+                                        <rect key="frame" x="171" y="769" width="50" height="51"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" image="sharing_icon">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -208,17 +208,18 @@
                                 </connections>
                             </button>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="cds-jf-WCF"/>
                         <color key="backgroundColor" name="YP Black"/>
                         <constraints>
                             <constraint firstItem="VRx-Ue-EWf" firstAttribute="leading" secondItem="MFD-m0-6DP" secondAttribute="leading" id="8sc-hs-FuX"/>
                             <constraint firstAttribute="trailing" secondItem="VRx-Ue-EWf" secondAttribute="trailing" id="9j8-NJ-r7q"/>
                             <constraint firstItem="VRx-Ue-EWf" firstAttribute="top" secondItem="MFD-m0-6DP" secondAttribute="top" id="ExH-Lo-D6n"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="Oth-2X-Wpu" secondAttribute="trailing" constant="155" id="Ezj-vW-eqM"/>
-                            <constraint firstItem="Oth-2X-Wpu" firstAttribute="leadingMargin" secondItem="MFD-m0-6DP" secondAttribute="leading" constant="179" id="K9f-wQ-MWc"/>
+                            <constraint firstItem="cds-jf-WCF" firstAttribute="trailing" secondItem="Oth-2X-Wpu" secondAttribute="trailing" constant="172" id="JlN-28-YmY"/>
                             <constraint firstAttribute="bottom" secondItem="VRx-Ue-EWf" secondAttribute="bottom" id="RFa-Rg-S6e"/>
+                            <constraint firstItem="Oth-2X-Wpu" firstAttribute="leading" secondItem="cds-jf-WCF" secondAttribute="leading" constant="171" id="ZJ6-f6-roL"/>
                             <constraint firstItem="vCa-xY-Ia6" firstAttribute="top" secondItem="MFD-m0-6DP" secondAttribute="top" constant="52" id="bNP-cb-FMd"/>
                             <constraint firstItem="vCa-xY-Ia6" firstAttribute="leading" secondItem="MFD-m0-6DP" secondAttribute="leading" constant="8" id="pCh-y9-lyk"/>
-                            <constraint firstAttribute="bottom" secondItem="Oth-2X-Wpu" secondAttribute="bottom" constant="45" id="ra8-Vj-fv0"/>
+                            <constraint firstItem="cds-jf-WCF" firstAttribute="bottom" secondItem="Oth-2X-Wpu" secondAttribute="bottom" constant="32" id="ysc-nD-xWh"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="wi1-VX-DxU"/>
@@ -241,7 +242,7 @@
         <image name="tab_editorial_active" width="30" height="30"/>
         <image name="tab_profile_active" width="30" height="30"/>
         <namedColor name="YP Black">
-            <color red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+            <color red="0.10196078431372549" green="0.10980392156862745" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
         </namedColor>
     </resources>
 </document>
