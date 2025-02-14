@@ -177,16 +177,6 @@
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </imageView>
-                                    <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Oth-2X-Wpu" userLabel="share">
-                                        <rect key="frame" x="171" y="769" width="50" height="51"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="sharing_icon">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="didTapShareButton" destination="abN-pS-HpH" eventType="touchUpInside" id="sNb-HS-D61"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                                 <viewLayoutGuide key="contentLayoutGuide" id="qBf-OB-wTh"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="bro-Z1-IeH"/>
@@ -194,6 +184,16 @@
                                     <outlet property="delegate" destination="abN-pS-HpH" id="4oa-WA-vwI"/>
                                 </connections>
                             </scrollView>
+                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Oth-2X-Wpu" userLabel="share">
+                                <rect key="frame" x="171" y="751" width="51" height="51"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="sharing_icon">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="didTapShareButton" destination="abN-pS-HpH" eventType="touchUpInside" id="sNb-HS-D61"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vCa-xY-Ia6">
                                 <rect key="frame" x="8" y="52" width="48" height="48"/>
                                 <constraints>
@@ -213,13 +213,12 @@
                         <constraints>
                             <constraint firstItem="VRx-Ue-EWf" firstAttribute="leading" secondItem="MFD-m0-6DP" secondAttribute="leading" id="8sc-hs-FuX"/>
                             <constraint firstAttribute="trailing" secondItem="VRx-Ue-EWf" secondAttribute="trailing" id="9j8-NJ-r7q"/>
+                            <constraint firstItem="cds-jf-WCF" firstAttribute="bottom" secondItem="Oth-2X-Wpu" secondAttribute="bottom" constant="50" id="Drv-BR-MNs"/>
                             <constraint firstItem="VRx-Ue-EWf" firstAttribute="top" secondItem="MFD-m0-6DP" secondAttribute="top" id="ExH-Lo-D6n"/>
-                            <constraint firstItem="cds-jf-WCF" firstAttribute="trailing" secondItem="Oth-2X-Wpu" secondAttribute="trailing" constant="172" id="JlN-28-YmY"/>
                             <constraint firstAttribute="bottom" secondItem="VRx-Ue-EWf" secondAttribute="bottom" id="RFa-Rg-S6e"/>
-                            <constraint firstItem="Oth-2X-Wpu" firstAttribute="leading" secondItem="cds-jf-WCF" secondAttribute="leading" constant="171" id="ZJ6-f6-roL"/>
                             <constraint firstItem="vCa-xY-Ia6" firstAttribute="top" secondItem="MFD-m0-6DP" secondAttribute="top" constant="52" id="bNP-cb-FMd"/>
+                            <constraint firstItem="Oth-2X-Wpu" firstAttribute="centerX" secondItem="cds-jf-WCF" secondAttribute="centerX" id="o3S-Rj-dj4"/>
                             <constraint firstItem="vCa-xY-Ia6" firstAttribute="leading" secondItem="MFD-m0-6DP" secondAttribute="leading" constant="8" id="pCh-y9-lyk"/>
-                            <constraint firstItem="cds-jf-WCF" firstAttribute="bottom" secondItem="Oth-2X-Wpu" secondAttribute="bottom" constant="32" id="ysc-nD-xWh"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="wi1-VX-DxU"/>

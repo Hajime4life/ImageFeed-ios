@@ -93,7 +93,7 @@ final class ProfileViewController: UIViewController {
         let label = UILabel()
         label.text = "@ekaterina_nov"
         label.textColor = .lightGray
-        label.font = .systemFont(ofSize: 14)
+        label.font = .systemFont(ofSize: 13)
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(label)
         
@@ -112,7 +112,7 @@ final class ProfileViewController: UIViewController {
         let label = UILabel()
         label.text = "Hello, world!"
         label.textColor = .white
-        label.font = .systemFont(ofSize: 16)
+        label.font = .systemFont(ofSize: 13)
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(label)
         
