@@ -2,6 +2,7 @@ import UIKit
 
 
 extension UIColor {
+    
     convenience init(hex: String, alpha: CGFloat = 1.0) {
         var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         
