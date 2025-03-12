@@ -60,8 +60,17 @@ final class ProfileViewController: UIViewController {
         else { return }
 
         imageView.kf.indicatorType = .activity
-        let processor = RoundCornerImageProcessor(cornerRadius: 35, backgroundColor: UIColor(red: 0.101, green: 0.106, blue: 0.136, alpha: 1.0))
-        imageView.kf.setImage(with: url, options: [.processor(processor)])
+        let targetSize = CGSize(width: 100, height: 100)
+        let downsamplingProcessor = DownsamplingImageProcessor(size: targetSize)
+        let roundCornerProcessor = RoundCornerImageProcessor(cornerRadius: 35, backgroundColor: UIColor(red: 0.101, green: 0.106, blue: 0.136, alpha: 1.0))
+
+        imageView.kf.setImage(
+            with: url,
+            options: [
+                .processor(downsamplingProcessor),
+                .processor(roundCornerProcessor)
+            ]
+        )
     }
 
     // MARK: - UI Configuration

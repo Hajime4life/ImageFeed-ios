@@ -55,8 +55,6 @@ final class ImagesListCell: UITableViewCell {
         self.imageCellView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4).isActive = true
     }
     
-
-    
     private func setDateLabel() {
         self.contentView.addSubview(self.dateLabel)
         self.dateLabel.textColor = .white

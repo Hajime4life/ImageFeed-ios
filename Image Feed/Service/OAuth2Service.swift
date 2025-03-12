@@ -30,25 +30,24 @@ final class OAuth2Service {
     // MARK: - Inits
     private init() {}
     
-    
     // MARK: - Public Methods
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
-        UIBlockingProgressHUD.show()
         guard lastCode != code else {
+            print("Error - Duplicate code")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
         task?.cancel()
         lastCode = code
         guard let request = makeOAuthTokenRequest(code: code) else {
+            print("Error - Failed to create request")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
         let task = urlSession.data(for: request) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self else { return }
-                UIBlockingProgressHUD.dismiss()
                 defer {
                     self.task = nil
                     self.lastCode = nil
@@ -60,9 +59,11 @@ final class OAuth2Service {
                         self.authToken = response.accessToken
                         completion(.success(response.accessToken))
                     } catch {
+                        print("Error - Decoding failed: \(error)")
                         completion(.failure(error))
                     }
                 case .failure(let error):
+                    print("Error - Network request failed: \(error)")
                     completion(.failure(error))
                 }
             }
@@ -74,7 +75,7 @@ final class OAuth2Service {
     // MARK: - Private Methods
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: OAuth2ServiceConstants.unsplashGetTokenURLString) else {
-            preconditionFailure("invalide sheme or host name")
+            preconditionFailure("Invalide sheme or host name")
         }
         
         urlComponents.queryItems = [

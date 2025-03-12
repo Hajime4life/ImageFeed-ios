@@ -42,17 +42,20 @@ final class SplashViewController: UIViewController, AuthViewControllerDelegate {
     // MARK: - Private Methods
     private func isAuthenticated() {
         guard !authenticateStatus else { return }
-        
         authenticateStatus = true
-        
         if storage.token != nil {
             UIBlockingProgressHUD.show()
-            fetchProfile { [weak self] in
+            fetchProfile { [weak self] result in
                 guard let self else { preconditionFailure("Weak self error") }
                 UIBlockingProgressHUD.dismiss()
-                self.switchToTabBarController()
+                switch result {
+                case .success:
+                    self.switchToTabBarController()
+                case .failure(let error):
+                    print("Profile fetch error: \(error)")
+                    self.showAlert()
+                }
             }
-            
         } else {
             let authViewController = AuthViewController()
             authViewController.delegate = self
@@ -73,32 +76,43 @@ final class SplashViewController: UIViewController, AuthViewControllerDelegate {
     private func fetchOAuthToken(_ code: String) {
         UIBlockingProgressHUD.show()
         oauth2Service.fetchOAuthToken(code) { [weak self] result in
-            guard let self else { preconditionFailure("Weak self error") }
+            guard let self else { return }
+            defer { UIBlockingProgressHUD.dismiss() } // Добавил чтобы в случае фейла тоже завершить загрузку
             switch result {
             case .success:
-                self.fetchProfile { UIBlockingProgressHUD.dismiss() }
+                self.fetchProfile { result in
+                    switch result {
+                    case .success:
+                        self.switchToTabBarController()
+                    case .failure(let error):
+                        self.showAlert()
+                    }
+                }
             case .failure(let error):
                 print("fetch token error \(error)")
                 self.showAlert()
-                UIBlockingProgressHUD.dismiss()
             }
         }
     }
-    
-    private func fetchProfile(completion: @escaping () -> Void ) {
-        guard let token = storage.token else { return }
+    private func fetchProfile(completion: @escaping (Result<Void, Error>) -> Void) {
+        guard let token = storage.token else {
+            completion(.failure(AuthServiceError.invalidRequest))
+            return
+        }
         
+        UIBlockingProgressHUD.show()
         profileService.fetchProfile(with: token) { [weak self] result in
-            guard let self else { preconditionFailure("Weak self error") }
+            guard let self else { return }
+            defer { UIBlockingProgressHUD.dismiss() }
             switch result {
             case .success(let profile):
-                self.switchToTabBarController()
+                self.switchToTabBarController() // defer чтобы завершить загрузку при ответе независимо от ответа
                 let username = profile.username
                 self.fetchProfileImage(username: username)
+                completion(.success(()))
             case .failure(let error):
-                print("fetch token error \(error)")
+                completion(.failure(error))
             }
-            completion()
         }
     }
     

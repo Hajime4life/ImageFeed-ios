@@ -21,23 +21,30 @@ final class ProfileImageService {
         assert(Thread.isMainThread)
         task?.cancel()
         guard let request = makeProfileResultRequest(username: username) else {
+            print("Error - Invalid request: Failed to create request")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
-            guard let self else { preconditionFailure("self is unavalible") }
+            guard let self else {
+                print("Error - Self is unavailable")
+                preconditionFailure("self is unavailable")
+            }
             switch result {
             case .success(let userResult):
-                guard let imageURL = userResult.profileImage.large else { preconditionFailure("cant get image URL") }
+                guard let imageURL = userResult.profileImage.large else {
+                    print("Error - Invalid response: Missing image URL")
+                    preconditionFailure("cant get image URL")
+                }
                 self.avatarURL = imageURL
                 completion(.success(imageURL))
-                NotificationCenter.default
-                    .post(
-                        name: ProfileImageService.didChangeNotification,
-                        object: self,
-                        userInfo: ["URL": imageURL])
+                NotificationCenter.default.post(
+                    name: ProfileImageService.didChangeNotification,
+                    object: self,
+                    userInfo: ["URL": imageURL]
+                )
             case .failure(let error):
-                print("ProfileImageService Error - \(error)")
+                print("Error - Network request failed: \(error)")
                 completion(.failure(error))
             }
             self.task = nil
@@ -52,7 +59,10 @@ final class ProfileImageService {
             return nil
         }
         
-        let token = String(describing: storage.token!)
+        guard let token = storage.token else {
+            assertionFailure("No token")
+            return nil
+        }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
