@@ -17,7 +17,8 @@ final class ProfileService {
         case invalidResponse
     }
     
-
+    // MARK: - Private Initializer
+    private init() {} 
     
     // MARK: - Public Methods
     func fetchProfile(with token: String, completion: @escaping (Result<Profile, Error>) -> Void) {

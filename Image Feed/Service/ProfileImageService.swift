@@ -8,13 +8,16 @@ final class ProfileImageService {
     
     // MARK: - Private Props
     private let urlSession = URLSession.shared
-    private var task: URLSessionTask? 
+    private var task: URLSessionTask?
     private let storage = OAuth2TokenStorage()
     private let decoder = SnakeCaseJSONDecoder()
     private(set) var avatarURL: String?
     private enum AuthServiceError: Error {
         case invalidRequest
     }
+    
+    // MARK: - Private Initializer
+    private init() {}
 
     // MARK: - Public Methods
     func fetchImageURL(with username: String, completion: @escaping (Result<String, any Error>) -> Void) {
