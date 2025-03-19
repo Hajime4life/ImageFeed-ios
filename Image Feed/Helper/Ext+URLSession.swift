@@ -4,7 +4,9 @@ enum NetworkError: Error {
     case httpStatusCode(Int)
     case urlRequestError(Error)
     case urlSessionError
+    case decodeError
 }
+
 
 extension URLSession {
     func data(
@@ -32,6 +34,41 @@ extension URLSession {
             }
         })
         
+        return task
+    }
+}
+
+
+extension URLSession {
+    func objectTask<T: Decodable>(
+        for request: URLRequest,
+        completion: @escaping (Result<T, Error>) -> Void
+    ) -> URLSessionTask {
+        
+        let fulfillCompletionOnTheMainThread: (Result<T, Error>) -> Void = { result in
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
+        
+        let decoder = SnakeCaseJSONDecoder()
+        
+        let task = data(for: request) { (result: Result<Data, Error>) in
+            switch result {
+            case.success(let data):
+                do {
+                    let result = try decoder.decode(T.self, from: data)
+                    fulfillCompletionOnTheMainThread(.success(result))
+                } catch {
+                    print("Decode error in \(#function): \(error.localizedDescription), Response: \(String(data: data, encoding: .utf8) ?? "")")
+                    fulfillCompletionOnTheMainThread(.failure(NetworkError.decodeError))
+                }
+            case .failure(let error):
+                print("Error \(error.localizedDescription)")
+                fulfillCompletionOnTheMainThread(.failure(error))
+            }
+        }
+        task.resume()
         return task
     }
 }

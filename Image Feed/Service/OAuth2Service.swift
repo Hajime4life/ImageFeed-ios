@@ -1,4 +1,9 @@
 import Foundation
+import ProgressHUD
+
+enum AuthServiceError: Error {
+    case invalidRequest
+}
 
 final class OAuth2Service {
     
@@ -18,45 +23,59 @@ final class OAuth2Service {
     private enum OAuth2ServiceConstants {
         static let unsplashGetTokenURLString = "https://unsplash.com/oauth/token"
     }
-
+    private let urlSession = URLSession.shared
+    private var task: URLSessionTask?
+    private var lastCode: String?
+    
     // MARK: - Inits
     private init() {}
     
-    
     // MARK: - Public Methods
-    func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, any Error>) -> Void) {
-        
-        let request = makeOAuthTokenRequest(code: code)
-        
-        let task = URLSession.shared.data(for: request) { [weak self] result in
-            
-            guard let self else { preconditionFailure("self is unavalible") }
-            
-            switch result {
-            case .success(let data):
-                
-                do {
-                    let OAuthTokenResponseBody = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: data)
-                    print(OAuthTokenResponseBody)
-                    print(OAuthTokenResponseBody.accessToken)
-                    self.authToken = OAuthTokenResponseBody.accessToken
-                    completion(.success(OAuthTokenResponseBody.accessToken))
-                } catch {
+    func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        guard lastCode != code else {
+            print("Error - Duplicate code")
+            completion(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+        task?.cancel()
+        lastCode = code
+        guard let request = makeOAuthTokenRequest(code: code) else {
+            print("Error - Failed to create request")
+            completion(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+        let task = urlSession.data(for: request) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                defer {
+                    self.task = nil
+                    self.lastCode = nil
+                }
+                switch result {
+                case .success(let data):
+                    do {
+                        let response = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: data)
+                        self.authToken = response.accessToken
+                        completion(.success(response.accessToken))
+                    } catch {
+                        print("Error - Decoding failed: \(error)")
+                        completion(.failure(error))
+                    }
+                case .failure(let error):
+                    print("Error - Network request failed: \(error)")
                     completion(.failure(error))
                 }
-                
-            case .failure(let error):
-                completion(.failure(error))
-                
             }
         }
+        self.task = task
         task.resume()
     }
     
     // MARK: - Private Methods
-    private func makeOAuthTokenRequest(code: String) -> URLRequest {
+    private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: OAuth2ServiceConstants.unsplashGetTokenURLString) else {
-            preconditionFailure("invalide sheme or host name")
+            preconditionFailure("Invalide sheme or host name")
         }
         
         urlComponents.queryItems = [
