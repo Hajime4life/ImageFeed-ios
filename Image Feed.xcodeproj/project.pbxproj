@@ -35,6 +35,8 @@
 		04F818F42D4F788F007F5A8F /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F818F32D4F788F007F5A8F /* ProfileViewController.swift */; };
 		04F818F62D50B8D3007F5A8F /* SingleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F818F52D50B8D3007F5A8F /* SingleImageViewController.swift */; };
 		04FA4A082D7F596300A61D41 /* SwiftKeychainWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 04FA4A072D7F596300A61D41 /* SwiftKeychainWrapper */; };
+		04FFE7642D9AB88300C6E409 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FFE7632D9AB88300C6E409 /* Photo.swift */; };
+		04FFE7662D9AB89600C6E409 /* ImagesListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FFE7652D9AB89600C6E409 /* ImagesListService.swift */; };
 		7D9CFA4328DDEE7F00D971A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D9CFA4228DDEE7F00D971A7 /* AppDelegate.swift */; };
 		7D9CFA4528DDEE7F00D971A7 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D9CFA4428DDEE7F00D971A7 /* SceneDelegate.swift */; };
 		7D9CFA4C28DDEE8000D971A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D9CFA4B28DDEE8000D971A7 /* Assets.xcassets */; };
@@ -67,6 +69,8 @@
 		04DF49A32D6F29590092A3C7 /* Ext+URLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ext+URLSession.swift"; sourceTree = "<group>"; };
 		04F818F32D4F788F007F5A8F /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		04F818F52D50B8D3007F5A8F /* SingleImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleImageViewController.swift; sourceTree = "<group>"; };
+		04FFE7632D9AB88300C6E409 /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
+		04FFE7652D9AB89600C6E409 /* ImagesListService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListService.swift; sourceTree = "<group>"; };
 		7D9CFA3F28DDEE7F00D971A7 /* Image Feed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Image Feed.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D9CFA4228DDEE7F00D971A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7D9CFA4428DDEE7F00D971A7 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -149,6 +153,7 @@
 				04DF49962D6F18580092A3C7 /* OAuth2Service.swift */,
 				04A874A92D79A93F006D382F /* ProfileService.swift */,
 				04A874AF2D7ED6F6006D382F /* ProfileImageService.swift */,
+				04FFE7652D9AB89600C6E409 /* ImagesListService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -182,6 +187,7 @@
 				04A874AD2D79AE75006D382F /* ProfileResult.swift */,
 				04A874B32D7ED830006D382F /* ProfileImage.swift */,
 				04A874BD2D7EDA3D006D382F /* AlertModel.swift */,
+				04FFE7632D9AB88300C6E409 /* Photo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -314,6 +320,7 @@
 				04DF49992D6F1DCB0092A3C7 /* OAuth2TokenStorage.swift in Sources */,
 				044558722D6E3BE500B1D21A /* WebViewViewController.swift in Sources */,
 				04A874AE2D79AE75006D382F /* ProfileResult.swift in Sources */,
+				04FFE7642D9AB88300C6E409 /* Photo.swift in Sources */,
 				046444692D525A30004E5ACE /* Ext+UIColor.swift in Sources */,
 				04A874A82D799CFF006D382F /* UIBlockingProgressHUD.swift in Sources */,
 				04A874B72D7ED93A006D382F /* TabBarController.swift in Sources */,
@@ -335,6 +342,7 @@
 				04A874B02D7ED6F6006D382F /* ProfileImageService.swift in Sources */,
 				0445586F2D6E3ABF00B1D21A /* AuthViewController.swift in Sources */,
 				0476BA3C2D67152400786FC7 /* Constants.swift in Sources */,
+				04FFE7662D9AB89600C6E409 /* ImagesListService.swift in Sources */,
 				04A874BA2D7ED9FD006D382F /* AlertPresenter.swift in Sources */,
 				04A874BC2D7EDA1D006D382F /* AlertPresenterProtocol.swift in Sources */,
 			);

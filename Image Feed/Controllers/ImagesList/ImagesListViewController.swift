@@ -40,12 +40,15 @@ extension ImagesListViewController: UITableViewDataSource {
         return photosName.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(
+        _ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
         
         guard let ImagesListCell = cell as? ImagesListCell else {
             return UITableViewCell()
         }
+        // TODO: Тут будем вызывать fetchPhotosNextPage()
+        // Если indexPath.row + 1 == photos.count то вызываем метод
 
         configCell(for: ImagesListCell, with: indexPath)
         return ImagesListCell
