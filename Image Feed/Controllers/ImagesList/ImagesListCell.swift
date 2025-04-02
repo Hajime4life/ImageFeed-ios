@@ -8,6 +8,7 @@ final class ImagesListCell: UITableViewCell {
     private lazy var imageCellView = UIImageView()
     private lazy var dateLabel = UILabel()
     private lazy var gradientView = UIView()
+    private lazy var likeButton = UIButton(type: .custom)
     
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -15,6 +16,9 @@ final class ImagesListCell: UITableViewCell {
         formatter.timeStyle = .none
         return formatter
     }()
+    
+    // MARK: - Public Props
+    var onLikeButtonTapped: (() -> Void)?
     
     // MARK: - Init's
     required init?(coder: NSCoder) {
@@ -32,6 +36,7 @@ final class ImagesListCell: UITableViewCell {
         imageCellView.kf.cancelDownloadTask()
         imageCellView.image = nil
         dateLabel.text = nil
+        likeButton.setImage(nil, for: .normal)
     }
     
     override func layoutSubviews() {
@@ -44,6 +49,9 @@ final class ImagesListCell: UITableViewCell {
     // MARK: - Public Methods
     func configure(with photo: Photo) {
         dateLabel.text = photo.createdAt.map { dateFormatter.string(from: $0) }
+        
+        let likeImage = photo.isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
+        likeButton.setImage(likeImage, for: .normal)
         
         guard let url = URL(string: photo.regularImageURL) else {
             print("Некорректный URL для изображения: \(photo.regularImageURL)")
@@ -77,6 +85,7 @@ final class ImagesListCell: UITableViewCell {
         setImageCellView()
         setDateLabel()
         setGradient()
+        setLikeButton()
     }
     
     private func setImageCellView() {
@@ -128,4 +137,20 @@ final class ImagesListCell: UITableViewCell {
         ])
     }
     
+    private func setLikeButton() {
+        likeButton.translatesAutoresizingMaskIntoConstraints = false
+        likeButton.addTarget(self, action: #selector(didTapLikeButton), for: .touchUpInside)
+        contentView.addSubview(likeButton)
+        
+        NSLayoutConstraint.activate([
+            likeButton.widthAnchor.constraint(equalToConstant: 44),
+            likeButton.heightAnchor.constraint(equalToConstant: 44),
+            likeButton.trailingAnchor.constraint(equalTo: imageCellView.trailingAnchor, constant: -8),
+            likeButton.topAnchor.constraint(equalTo: imageCellView.topAnchor, constant: 8)
+        ])
+    }
+    
+    @objc private func didTapLikeButton() {
+        onLikeButtonTapped?()
+    }
 }
