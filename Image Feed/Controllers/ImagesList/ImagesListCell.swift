@@ -18,7 +18,7 @@ final class ImagesListCell: UITableViewCell {
     }()
     
     // MARK: - Public Props
-    var onLikeButtonTapped: (() -> Void)?
+    weak var delegate: ImagesListCellDelegate?
     
     // MARK: - Init's
     required init?(coder: NSCoder) {
@@ -49,9 +49,7 @@ final class ImagesListCell: UITableViewCell {
     // MARK: - Public Methods
     func configure(with photo: Photo) {
         dateLabel.text = photo.createdAt.map { dateFormatter.string(from: $0) }
-        
-        let likeImage = photo.isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
-        likeButton.setImage(likeImage, for: .normal)
+        setIsLiked(photo.isLiked)
         
         guard let url = URL(string: photo.regularImageURL) else {
             print("Некорректный URL для изображения: \(photo.regularImageURL)")
@@ -76,6 +74,11 @@ final class ImagesListCell: UITableViewCell {
                 print("Ошибка загрузки изображения в ячейке: \(error)")
             }
         }
+    }
+    
+    func setIsLiked(_ isLiked: Bool) {
+        let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
+        likeButton.setImage(likeImage, for: .normal)
     }
     
     // MARK: - Private Methods
@@ -139,7 +142,7 @@ final class ImagesListCell: UITableViewCell {
     
     private func setLikeButton() {
         likeButton.translatesAutoresizingMaskIntoConstraints = false
-        likeButton.addTarget(self, action: #selector(didTapLikeButton), for: .touchUpInside)
+        likeButton.addTarget(self, action: #selector(likeButtonClicked), for: .touchUpInside)
         contentView.addSubview(likeButton)
         
         NSLayoutConstraint.activate([
@@ -150,7 +153,12 @@ final class ImagesListCell: UITableViewCell {
         ])
     }
     
-    @objc private func didTapLikeButton() {
-        onLikeButtonTapped?()
+    @objc private func likeButtonClicked() {
+        delegate?.imageListCellDidTapLike(self)
     }
+}
+
+// MARK: - ImagesListCellDelegate
+protocol ImagesListCellDelegate: AnyObject {
+    func imageListCellDidTapLike(_ cell: ImagesListCell)
 }

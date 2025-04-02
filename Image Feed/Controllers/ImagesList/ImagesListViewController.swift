@@ -63,23 +63,6 @@ final class ImagesListViewController: UIViewController {
         }
     }
     
-    private func handleLikeButtonTapped(for photo: Photo, at indexPath: IndexPath) {
-        let newLikeState = !photo.isLiked
-        imagesListService.changeLike(photoId: photo.id, isLike: newLikeState) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success:
-                self.photos = self.imagesListService.photos
-                if let cell = self.tableView?.cellForRow(at: indexPath) as? ImagesListCell {
-                    cell.configure(with: self.photos[indexPath.row])
-                }
-            case .failure(let error):
-                print("Ошибка изменения лайка: \(error.localizedDescription)")
-                self.showAlert(for: error)
-            }
-        }
-    }
-    
     private func showAlert(for error: Error) {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
@@ -109,10 +92,7 @@ extension ImagesListViewController: UITableViewDataSource {
         
         let photo = photos[indexPath.row]
         cell.configure(with: photo)
-        cell.onLikeButtonTapped = { [weak self] in
-            guard let self = self else { return }
-            self.handleLikeButtonTapped(for: photo, at: indexPath)
-        }
+        cell.delegate = self
         return cell
     }
 }
@@ -148,6 +128,28 @@ extension ImagesListViewController: UITableViewDelegate {
         singleImageViewController.modalPresentationStyle = .fullScreen
         present(singleImageViewController, animated: true) {
             singleImageViewController.loadImage(from: url)
+        }
+    }
+}
+
+// MARK: - ImagesListCellDelegate
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView?.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        
+        UIBlockingProgressHUD.show()
+        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success:
+                self.photos = self.imagesListService.photos
+                cell.setIsLiked(self.photos[indexPath.row].isLiked)
+                UIBlockingProgressHUD.dismiss()
+            case .failure(let error):
+                UIBlockingProgressHUD.dismiss()
+                self.showAlert(for: error)
+            }
         }
     }
 }

@@ -63,6 +63,11 @@ final class ImagesListService {
                         !self.photos.contains { $0.id == newPhoto.id }
                     }
                     
+                    // Отладочный вывод: проверяем состояние лайков
+                    for photo in uniquePhotos {
+                        print("Фото \(photo.id), isLiked: \(photo.isLiked)")
+                    }
+                    
                     self.photos.append(contentsOf: uniquePhotos)
                     self.lastLoadedPage = nextPage
                     
