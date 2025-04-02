@@ -1,15 +1,20 @@
 import Foundation
 
 final class ImagesListService {
+    
+    // MARK: - Private Props
     private(set) var photos: [Photo] = []
     private var lastLoadedPage: Int?
     private var isLoading = false
-    private var currentTask: URLSessionTask? // Добавляем свойство для отслеживания текущей задачи
+    private var currentTask: URLSessionTask?
     private let storage = OAuth2TokenStorage()
+    
+    // MARK: - Public Props
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     
+    
+    // MARK: - Public Methods
     func fetchPhotosNextPage() {
-        // Проверяем, что нет активной загрузки и текущей задачи
         guard !isLoading, currentTask == nil else { return }
         
         let nextPage = (lastLoadedPage ?? 0) + 1
@@ -55,7 +60,6 @@ final class ImagesListService {
                 let newPhotos = photoResults.compactMap { Photo(from: $0) }
                 
                 DispatchQueue.main.async {
-                    // Фильтруем уникальные фотографии
                     let uniquePhotos = newPhotos.filter { newPhoto in
                         !self.photos.contains { $0.id == newPhoto.id }
                     }
