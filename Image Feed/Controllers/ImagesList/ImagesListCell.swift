@@ -1,9 +1,9 @@
 import UIKit
-
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
-    // MARK: - Public Props
     static let reuseIdentifier = "ImagesListCell"
+    
     // MARK: - Private Props
     private lazy var imageCellView = UIImageView()
     private lazy var dateLabel = UILabel()
@@ -16,71 +16,116 @@ final class ImagesListCell: UITableViewCell {
         return formatter
     }()
     
-    // MARK: - Overrides Methods
+    // MARK: - Init's
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setCellUI()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    // MARK: - Overrides
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageCellView.kf.cancelDownloadTask()
+        imageCellView.image = nil
+        dateLabel.text = nil
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if let gradientLayer = gradientView.layer.sublayers?.first as? CAGradientLayer {
+            gradientLayer.frame = gradientView.bounds
+        }
     }
     
     // MARK: - Public Methods
-    func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        guard let image = UIImage(named: "\(indexPath.row)") else { return }
-        imageCellView.image = image
-        dateLabel.text = dateFormatter.string(from: Date())
+    func configure(with photo: Photo) {
+        dateLabel.text = photo.createdAt.map { dateFormatter.string(from: $0) }
+        
+        guard let url = URL(string: photo.regularImageURL) else {
+            print("Некорректный URL для изображения: \(photo.regularImageURL)")
+            return
+        }
+        
+        imageCellView.kf.indicatorType = .activity
+        imageCellView.kf.setImage(
+            with: url,
+            placeholder: UIImage(named: "placeholder"),
+            options: [
+                .transition(.fade(0.2)),
+                .cacheOriginalImage,
+                .scaleFactor(UIScreen.main.scale)
+            ]
+        ) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success:
+                break
+            case .failure(let error):
+                print("Ошибка загрузки изображения в ячейке: \(error)")
+            }
+        }
     }
     
     // MARK: - Private Methods
     private func setCellUI() {
+        backgroundColor = #colorLiteral(red: 0.1001180634, green: 0.1101232544, blue: 0.1355511546, alpha: 1)
+        contentView.backgroundColor = .clear
         setImageCellView()
         setDateLabel()
         setGradient()
     }
     
     private func setImageCellView() {
-        self.contentView.addSubview(self.imageCellView)
-        self.imageCellView.contentMode = .scaleAspectFill
-        self.imageCellView.layer.cornerRadius = 16
-        self.imageCellView.layer.masksToBounds = true
-        self.contentView.backgroundColor = #colorLiteral(red: 0.1001180634, green: 0.1101232544, blue: 0.1355511546, alpha: 1)
-        self.backgroundColor = #colorLiteral(red: 0.1001180634, green: 0.1101232544, blue: 0.1355511546, alpha: 1)
-        self.selectionStyle = .none
-        self.imageCellView.translatesAutoresizingMaskIntoConstraints = false
-        self.imageCellView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4).isActive = true
-        self.imageCellView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
-        self.imageCellView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
-        self.imageCellView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4).isActive = true
+        imageCellView.translatesAutoresizingMaskIntoConstraints = false
+        imageCellView.contentMode = .scaleAspectFill
+        imageCellView.clipsToBounds = true
+        imageCellView.layer.cornerRadius = 16
+        imageCellView.backgroundColor = #colorLiteral(red: 0.1001180634, green: 0.1101232544, blue: 0.1355511546, alpha: 1)
+        contentView.addSubview(imageCellView)
+        
+        NSLayoutConstraint.activate([
+            imageCellView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
+            imageCellView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            imageCellView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            imageCellView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4)
+        ])
     }
-    
+
     private func setDateLabel() {
-        self.contentView.addSubview(self.dateLabel)
-        self.dateLabel.textColor = .white
-        self.dateLabel.font = .systemFont(ofSize: 13)
-        self.dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.dateLabel.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 24).isActive = true
-        self.dateLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -12).isActive = true
+        dateLabel.translatesAutoresizingMaskIntoConstraints = false
+        dateLabel.textColor = .white
+        dateLabel.font = .systemFont(ofSize: 13)
+        contentView.addSubview(dateLabel)
+        
+        NSLayoutConstraint.activate([
+            dateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 24),
+            dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
+        ])
     }
     
     private func setGradient() {
-        self.contentView.addSubview(self.gradientView)
-        self.gradientView.layer.masksToBounds = true
-        self.gradientView.layer.maskedCorners = [.layerMinXMaxYCorner,.layerMaxXMaxYCorner]
-        self.gradientView.layer.cornerRadius = 16
-        self.gradientView.translatesAutoresizingMaskIntoConstraints = false
-        self.gradientView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16).isActive = true
-        self.gradientView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16).isActive = true
-        self.gradientView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -4).isActive = true
-        self.gradientView.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        self.gradientView.layoutIfNeeded()
-        let gradientViewLayer = CAGradientLayer()
-        gradientViewLayer.colors = [#colorLiteral(red: 0.101058431, green: 0.1060451791, blue: 0.1357983351, alpha: 0).cgColor, #colorLiteral(red: 0.101058431, green: 0.1060451791, blue: 0.1357983351, alpha: 0.200000003).cgColor]
-        gradientViewLayer.frame = self.gradientView.bounds
-        if self.gradientView.layer.sublayers?.count == nil  {
-            self.gradientView.layer.addSublayer(gradientViewLayer)
-        }
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: 30)
+        gradientLayer.colors = [UIColor.black.withAlphaComponent(0).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor]
+        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+        
+        gradientView.translatesAutoresizingMaskIntoConstraints = false
+        gradientView.layer.insertSublayer(gradientLayer, at: 0)
+        gradientView.clipsToBounds = true
+        gradientView.layer.cornerRadius = 16
+        contentView.addSubview(gradientView)
+        
+        NSLayoutConstraint.activate([
+            gradientView.leadingAnchor.constraint(equalTo: imageCellView.leadingAnchor),
+            gradientView.trailingAnchor.constraint(equalTo: imageCellView.trailingAnchor),
+            gradientView.bottomAnchor.constraint(equalTo: imageCellView.bottomAnchor),
+            gradientView.heightAnchor.constraint(equalToConstant: 30)
+        ])
     }
+    
 }
-
