@@ -1,7 +1,6 @@
 import UIKit
 import Kingfisher
 
-
 final class SingleImageViewController: UIViewController {
     
     // MARK: - Public Props
@@ -11,6 +10,7 @@ final class SingleImageViewController: UIViewController {
             imageView.image = image
             imageView.frame = CGRect(origin: .zero, size: image.size)
             updateMinZoomScaleForSize(view.bounds.size)
+            hideLoadingView()
         }
     }
     
@@ -20,10 +20,26 @@ final class SingleImageViewController: UIViewController {
     private lazy var scrollView = UIScrollView()
     private var shareButton: UIButton?
     
+    private lazy var loadingView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(named: "YP Black")
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private lazy var loadingImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "fullscreen_loading_icon")
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+
     // MARK: - Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
         setSingleImageScreen()
+        showLoadingView()
     }
     
     override func viewWillLayoutSubviews() {
@@ -35,6 +51,7 @@ final class SingleImageViewController: UIViewController {
     
     // MARK: - Public Methods
     func loadImage(from url: URL) {
+        showLoadingView()
         imageView.kf.indicatorType = .activity
         imageView.kf.setImage(
             with: url,
@@ -46,6 +63,7 @@ final class SingleImageViewController: UIViewController {
             case .success(let value):
                 self.image = value.image
             case .failure(let error):
+                self.hideLoadingView()
                 self.showAlert()
             }
         }
@@ -68,7 +86,8 @@ final class SingleImageViewController: UIViewController {
     private func setSingleImageScreen() {
         setImageView()
         setScrollView()
-        setBackButton()
+        setLoadingView() // Установка loadingView
+        setBackButton()  // Кнопка "Назад" добавляется после loadingView
         setShareButton()
     }
     
@@ -181,6 +200,34 @@ final class SingleImageViewController: UIViewController {
         let xOffset = max(0, (scaledSize.width - scrollView.bounds.width) / 2)
         let yOffset = max(0, (scaledSize.height - scrollView.bounds.height) / 2)
         scrollView.contentOffset = CGPoint(x: xOffset, y: yOffset)
+    }
+    
+    private func setLoadingView() {
+        view.addSubview(loadingView)
+        loadingView.addSubview(loadingImageView)
+        
+        NSLayoutConstraint.activate([
+            loadingView.topAnchor.constraint(equalTo: view.topAnchor),
+            loadingView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            loadingView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            loadingView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            loadingImageView.centerXAnchor.constraint(equalTo: loadingView.centerXAnchor),
+            loadingImageView.centerYAnchor.constraint(equalTo: loadingView.centerYAnchor),
+            loadingImageView.widthAnchor.constraint(equalToConstant: 100),
+            loadingImageView.heightAnchor.constraint(equalToConstant: 100)
+        ])
+    }
+    
+    private func showLoadingView() {
+        loadingView.isHidden = false
+        if let backButton = backButton {
+            view.bringSubviewToFront(backButton)
+        }
+    }
+    
+    private func hideLoadingView() {
+        loadingView.isHidden = true
     }
 }
 
