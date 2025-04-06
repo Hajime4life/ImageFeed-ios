@@ -4,23 +4,21 @@ import Kingfisher
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
     
-    // MARK: - Private Props
     private lazy var imageCellView = UIImageView()
     private lazy var dateLabel = UILabel()
     private lazy var gradientView = UIView()
     private lazy var likeButton = UIButton(type: .custom)
     
+    // Кастомный форматтер для даты
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
+        formatter.dateFormat = "d MMMM yyyy"
+        formatter.locale = Locale(identifier: "ru_RU") 
         return formatter
     }()
     
-    // MARK: - Public Props
     weak var delegate: ImagesListCellDelegate?
     
-    // MARK: - Init's
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -30,7 +28,6 @@ final class ImagesListCell: UITableViewCell {
         setCellUI()
     }
     
-    // MARK: - Overrides
     override func prepareForReuse() {
         super.prepareForReuse()
         imageCellView.kf.cancelDownloadTask()
@@ -46,10 +43,11 @@ final class ImagesListCell: UITableViewCell {
         }
     }
     
-    // MARK: - Public Methods
     func configure(with photo: Photo) {
-        dateLabel.text = photo.createdAt.map { dateFormatter.string(from: $0) }
-        setIsLiked(photo.isLiked)
+        // Обработка опциональной даты
+        print("Configuring cell for photo \(photo.id), isLiked: \(photo.isLiked)") // Добавь лог
+            dateLabel.text = photo.createdAt != nil ? dateFormatter.string(from: photo.createdAt!) : "Дата неизвестна"
+            setIsLiked(photo.isLiked)
         
         guard let url = URL(string: photo.regularImageURL) else {
             print("Некорректный URL для изображения: \(photo.regularImageURL)")
@@ -81,13 +79,11 @@ final class ImagesListCell: UITableViewCell {
         likeButton.setImage(likeImage, for: .normal)
     }
     
-    // MARK: - Private Methods
     private func setCellUI() {
         backgroundColor = #colorLiteral(red: 0.1001180634, green: 0.1101232544, blue: 0.1355511546, alpha: 1)
         contentView.backgroundColor = .clear
         setImageCellView()
         setDateLabel()
-        setGradient()
         setLikeButton()
     }
     
@@ -118,27 +114,7 @@ final class ImagesListCell: UITableViewCell {
             dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
     }
-    
-    private func setGradient() {
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.frame = CGRect(x: 0, y: 0, width: contentView.frame.width, height: 30)
-        gradientLayer.colors = [UIColor.black.withAlphaComponent(0).cgColor, UIColor.black.withAlphaComponent(0.8).cgColor]
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
-        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
-        
-        gradientView.translatesAutoresizingMaskIntoConstraints = false
-        gradientView.layer.insertSublayer(gradientLayer, at: 0)
-        gradientView.clipsToBounds = true
-        gradientView.layer.cornerRadius = 16
-        contentView.addSubview(gradientView)
-        
-        NSLayoutConstraint.activate([
-            gradientView.leadingAnchor.constraint(equalTo: imageCellView.leadingAnchor),
-            gradientView.trailingAnchor.constraint(equalTo: imageCellView.trailingAnchor),
-            gradientView.bottomAnchor.constraint(equalTo: imageCellView.bottomAnchor),
-            gradientView.heightAnchor.constraint(equalToConstant: 30)
-        ])
-    }
+
     
     private func setLikeButton() {
         likeButton.translatesAutoresizingMaskIntoConstraints = false

@@ -13,12 +13,22 @@ struct Photo {
 
 extension Photo {
     init?(from photoResult: PhotoResult) {
-        let dateFormatter = ISO8601DateFormatter()
-        
-        if let createdAtString = photoResult.createdAt,
-           let createdAt = dateFormatter.date(from: createdAtString) {
-            self.createdAt = createdAt
+        // Поддержка разных форматов даты
+        if let createdAtString = photoResult.createdAt {
+            let isoFormatter = ISO8601DateFormatter()
+            let customFormatter = DateFormatter()
+            customFormatter.dateFormat = "yyyy-MM-dd" // Простой формат, если ISO не работает
+            
+            if let date = isoFormatter.date(from: createdAtString) {
+                self.createdAt = date
+            } else if let date = customFormatter.date(from: createdAtString) {
+                self.createdAt = date
+            } else {
+                print("Не удалось распарсить дату: \(createdAtString)")
+                self.createdAt = nil
+            }
         } else {
+            print("Дата отсутствует в ответе API: \(photoResult.id)")
             self.createdAt = nil
         }
         
@@ -29,9 +39,9 @@ extension Photo {
         self.id = photoResult.id
         self.size = CGSize(width: photoResult.width, height: photoResult.height)
         self.welcomeDescription = photoResult.description
-        self.thumbImageURL = photoResult.thumbImageURL
-        self.regularImageURL = photoResult.regularImageURL
-        self.largeImageURL = photoResult.largeImageURL
-        self.isLiked = photoResult.isLiked
+        self.thumbImageURL = photoResult.urls.thumb
+        self.regularImageURL = photoResult.urls.regular
+        self.largeImageURL = photoResult.urls.full
+        self.isLiked = photoResult.likedByUser ?? false // Здесь мапим likedByUser
     }
 }

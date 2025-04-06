@@ -25,7 +25,7 @@ final class ImagesListService {
             return
         }
         
-        let urlString = "\(Constants.unsplashGetPhotosResultsURLString)?page=\(nextPage)&per_page=10&client_id=\(Constants.accessKey)"
+        let urlString = "\(Constants.unsplashGetPhotosResultsURLString)?page=\(nextPage)&per_page=10"
         guard let url = URL(string: urlString) else {
             isLoading = false
             return
@@ -53,20 +53,23 @@ final class ImagesListService {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 decoder.dateDecodingStrategy = .iso8601
-                
+
                 let photoResults = try decoder.decode([PhotoResult].self, from: data)
+
+                for result in photoResults {
+                    print("PhotoResult ID: \(result.id), createdAt raw: \(result.createdAt ?? "nil"), likedByUser: \(result.likedByUser ?? false)")
+                }
                 
                 let newPhotos = photoResults.compactMap { Photo(from: $0) }
                 
                 DispatchQueue.main.async {
                     let uniquePhotos = newPhotos.filter { newPhoto in
-                        !self.photos.contains { $0.id == newPhoto.id }
-                    }
-                    
-                    // Отладочный вывод: проверяем состояние лайков
+                            !self.photos.contains { $0.id == newPhoto.id }
+                        }
+                        
                     for photo in uniquePhotos {
-                        print("Фото \(photo.id), isLiked: \(photo.isLiked)")
-                    }
+                            print("Фото \(photo.id), isLiked: \(photo.isLiked), createdAt: \(photo.createdAt?.description ?? "nil"))")
+                        }
                     
                     self.photos.append(contentsOf: uniquePhotos)
                     self.lastLoadedPage = nextPage
@@ -77,7 +80,11 @@ final class ImagesListService {
                     )
                 }
             } catch {
-                print("Ошибка декодирования: \(error.localizedDescription)")
+                print("Ошибка декодирования: \(error)")
+                    if let jsonString = String(data: data, encoding: .utf8) {
+                        print("Необработанный JSON: \(jsonString)")
+                    }
+                return
             }
         }
         
@@ -123,8 +130,7 @@ final class ImagesListService {
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode) else {
                 DispatchQueue.main.async {
-                    print("HTTP ответ отрицательный, статус: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
-                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response, status code: \((response as? HTTPURLResponse)?.statusCode ?? -1)"])))
+                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid response"])))
                 }
                 return
             }

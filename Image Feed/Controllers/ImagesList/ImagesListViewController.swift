@@ -60,6 +60,8 @@ final class ImagesListViewController: UIViewController {
                 let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: 0) }
                 tableView?.insertRows(at: indexPaths, with: .automatic)
             }, completion: nil)
+        } else {
+            tableView?.reloadData() // Убедись, что таблица обновляется
         }
     }
     

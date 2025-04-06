@@ -1,7 +1,15 @@
 import UIKit
-
+#if DEBUG
+import netfox
+#endif
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+    override init() {
+        #if DEBUG
+                NFX.sharedInstance().start()
+        #endif
+    }
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         return true
     }
