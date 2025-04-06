@@ -10,15 +10,16 @@ final class OAuth2Service {
     // MARK: - Public Props
     static let shared = OAuth2Service()
 
-    var authToken: String? {
-        get {
-            OAuth2TokenStorage().token
+        var authToken: String? {
+            get {
+                OAuth2TokenStorage().token
+            }
+            set {
+                OAuth2TokenStorage().token = newValue
+            }
         }
-        set {
-            OAuth2TokenStorage().token = newValue
-        }
-    }
-    
+
+
     // MARK: - Private Props
     private enum OAuth2ServiceConstants {
         static let unsplashGetTokenURLString = "https://unsplash.com/oauth/token"
@@ -31,6 +32,10 @@ final class OAuth2Service {
     private init() {}
     
     // MARK: - Public Methods
+    func clearAuthToken() {
+        authToken = nil
+    }
+    
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
         guard lastCode != code else {

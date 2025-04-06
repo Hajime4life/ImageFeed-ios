@@ -8,8 +8,6 @@ final class ImagesListCell: UITableViewCell {
     private lazy var dateLabel = UILabel()
     private lazy var gradientView = UIView()
     private lazy var likeButton = UIButton(type: .custom)
-    
-    // Кастомный форматтер для даты
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMMM yyyy"
@@ -44,13 +42,12 @@ final class ImagesListCell: UITableViewCell {
     }
     
     func configure(with photo: Photo) {
-        // Обработка опциональной даты
-        print("Configuring cell for photo \(photo.id), isLiked: \(photo.isLiked)") // Добавь лог
+        
             dateLabel.text = photo.createdAt != nil ? dateFormatter.string(from: photo.createdAt!) : "Дата неизвестна"
             setIsLiked(photo.isLiked)
         
         guard let url = URL(string: photo.regularImageURL) else {
-            print("Некорректный URL для изображения: \(photo.regularImageURL)")
+            print("Error - incorrect image URL: \(photo.regularImageURL)")
             return
         }
         
@@ -69,7 +66,7 @@ final class ImagesListCell: UITableViewCell {
             case .success:
                 break
             case .failure(let error):
-                print("Ошибка загрузки изображения в ячейке: \(error)")
+                print("Error - failed to load image to cell: \(error)")
             }
         }
     }

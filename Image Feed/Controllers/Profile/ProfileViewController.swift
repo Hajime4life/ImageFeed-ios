@@ -26,10 +26,34 @@ final class ProfileViewController: UIViewController {
     // MARK: - Actions
     @objc
     private func logoutButtonTapped() {
-        // TODO: Обработка нажатия на кнопку выхода
+        let alertModel = AlertModel(
+            title: "Пока, пока!",
+            message: "Уверены что хотите выйти?",
+            buttonText: "Да",
+            completion: { [weak self] in
+                self?.logout()
+            },
+            secondaryButtonText: "Нет",
+            secondaryButtonCompletion: {
+                // тут наверно пусто, не знаю
+            }
+        )
+        AlertPresenter.showAlert(model: alertModel, vc: self)
     }
+    
 
     // MARK: - Private methods
+    private func logout() {
+        OAuth2TokenStorage().clearToken()
+        HTTPCookieStorage.shared.removeCookies(since: .distantPast)
+        guard let window = UIApplication.shared.windows.first else {
+            assertionFailure("Invalid window configuration")
+            return
+        }
+        let splashViewController = SplashViewController()
+        window.rootViewController = splashViewController
+    }
+    
     private func updateProfileDetails() {
         guard let profile = profileService.profile else {
             return

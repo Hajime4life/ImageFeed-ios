@@ -61,7 +61,7 @@ final class ImagesListViewController: UIViewController {
                 tableView?.insertRows(at: indexPaths, with: .automatic)
             }, completion: nil)
         } else {
-            tableView?.reloadData() // Убедись, что таблица обновляется
+            tableView?.reloadData()
         }
     }
     

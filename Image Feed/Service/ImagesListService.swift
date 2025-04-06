@@ -43,7 +43,7 @@ final class ImagesListService {
             }
             
             if let error = error {
-                print("Ошибка загрузки: \(error.localizedDescription)")
+                print("Error - download: \(error.localizedDescription)")
                 return
             }
             
@@ -54,10 +54,6 @@ final class ImagesListService {
                 decoder.dateDecodingStrategy = .iso8601
 
                 let photoResults = try decoder.decode([PhotoResult].self, from: data)
-
-                for result in photoResults {
-                    print("PhotoResult ID: \(result.id), createdAt raw: \(result.createdAt ?? "nil"), likedByUser: \(result.likedByUser ?? false)")
-                }
                 
                 let newPhotos = photoResults.compactMap { Photo(from: $0) }
                 
@@ -66,9 +62,6 @@ final class ImagesListService {
                             !self.photos.contains { $0.id == newPhoto.id }
                         }
                         
-                    for photo in uniquePhotos {
-                            print("Фото \(photo.id), isLiked: \(photo.isLiked), createdAt: \(photo.createdAt?.description ?? "nil"))")
-                        }
                     
                     self.photos.append(contentsOf: uniquePhotos)
                     self.lastLoadedPage = nextPage
@@ -79,9 +72,9 @@ final class ImagesListService {
                     )
                 }
             } catch {
-                print("Ошибка декодирования: \(error)")
+                print("Error -  decode failed: \(error)")
                     if let jsonString = String(data: data, encoding: .utf8) {
-                        print("Необработанный JSON: \(jsonString)")
+                        print("JSON: \(jsonString)")
                     }
                 return
             }

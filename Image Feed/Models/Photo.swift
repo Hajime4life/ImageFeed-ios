@@ -9,15 +9,15 @@ struct Photo {
     let regularImageURL: String
     let largeImageURL: String
     let isLiked: Bool
+    
 }
 
 extension Photo {
     init?(from photoResult: PhotoResult) {
-        // Поддержка разных форматов даты
         if let createdAtString = photoResult.createdAt {
             let isoFormatter = ISO8601DateFormatter()
             let customFormatter = DateFormatter()
-            customFormatter.dateFormat = "yyyy-MM-dd" // Простой формат, если ISO не работает
+            customFormatter.dateFormat = "yyyy-MM-dd" // на всякий случай
             
             if let date = isoFormatter.date(from: createdAtString) {
                 self.createdAt = date
@@ -42,6 +42,6 @@ extension Photo {
         self.thumbImageURL = photoResult.urls.thumb
         self.regularImageURL = photoResult.urls.regular
         self.largeImageURL = photoResult.urls.full
-        self.isLiked = photoResult.likedByUser ?? false // Здесь мапим likedByUser
+        self.isLiked = photoResult.likedByUser ?? false
     }
 }

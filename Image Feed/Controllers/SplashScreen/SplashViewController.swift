@@ -52,7 +52,7 @@ final class SplashViewController: UIViewController, AuthViewControllerDelegate {
                 case .success:
                     self.switchToTabBarController()
                 case .failure(let error):
-                    print("Profile fetch error: \(error)")
+                    print("Error - Profile fetch: \(error)")
                     self.showAlert()
                 }
             }
@@ -89,7 +89,7 @@ final class SplashViewController: UIViewController, AuthViewControllerDelegate {
                     }
                 }
             case .failure(let error):
-                print("fetch token error \(error)")
+                print("Error - fetch token error \(error)")
                 self.showAlert()
             }
         }
@@ -120,9 +120,9 @@ final class SplashViewController: UIViewController, AuthViewControllerDelegate {
         profileImageService.fetchImageURL(with: username) { result in
             switch result {
             case .success(let imageURL):
-                print("imageURL - \(imageURL)")
+                print("Profile loaded")
             case .failure(let error):
-                print("fetch image error \(error)")
+                print("Error - fetch image error \(error)")
             }
         }
     }

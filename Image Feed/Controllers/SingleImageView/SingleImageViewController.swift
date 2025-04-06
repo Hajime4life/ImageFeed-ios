@@ -86,8 +86,8 @@ final class SingleImageViewController: UIViewController {
     private func setSingleImageScreen() {
         setImageView()
         setScrollView()
-        setLoadingView() // Установка loadingView
-        setBackButton()  // Кнопка "Назад" добавляется после loadingView
+        setLoadingView()
+        setBackButton()
         setShareButton()
     }
     

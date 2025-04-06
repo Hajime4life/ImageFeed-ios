@@ -24,7 +24,7 @@ final class ProfileService {
     func fetchProfile(with token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         assert(Thread.isMainThread)
         guard lastToken != token else {
-            print("ProfileService Error - Invalid request: Duplicate token")
+            print("Error - Invalid request: Duplicate token")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }

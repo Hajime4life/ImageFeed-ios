@@ -28,6 +28,7 @@
 		04A874BE2D7EDA3D006D382F /* AlertModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A874BD2D7EDA3D006D382F /* AlertModel.swift */; };
 		04A874C12D7EFDDD006D382F /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 04A874C02D7EFDDD006D382F /* Kingfisher */; };
 		04BDBDD42DA29F5D000C4117 /* netfox in Frameworks */ = {isa = PBXBuildFile; productRef = 04BDBDD32DA29F5D000C4117 /* netfox */; };
+		04BDBDD62DA2BE67000C4117 /* NetworkErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BDBDD52DA2BE67000C4117 /* NetworkErrorType.swift */; };
 		04D9A3B02D9D5C37009456EF /* PhotoResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D9A3AF2D9D5C37009456EF /* PhotoResult.swift */; };
 		04DF49972D6F18580092A3C7 /* OAuth2Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DF49962D6F18580092A3C7 /* OAuth2Service.swift */; };
 		04DF49992D6F1DCB0092A3C7 /* OAuth2TokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DF49982D6F1DCB0092A3C7 /* OAuth2TokenStorage.swift */; };
@@ -64,6 +65,7 @@
 		04A874B92D7ED9FD006D382F /* AlertPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPresenter.swift; sourceTree = "<group>"; };
 		04A874BB2D7EDA1D006D382F /* AlertPresenterProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPresenterProtocol.swift; sourceTree = "<group>"; };
 		04A874BD2D7EDA3D006D382F /* AlertModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertModel.swift; sourceTree = "<group>"; };
+		04BDBDD52DA2BE67000C4117 /* NetworkErrorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkErrorType.swift; sourceTree = "<group>"; };
 		04D9A3AF2D9D5C37009456EF /* PhotoResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoResult.swift; sourceTree = "<group>"; };
 		04DF49962D6F18580092A3C7 /* OAuth2Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth2Service.swift; sourceTree = "<group>"; };
 		04DF49982D6F1DCB0092A3C7 /* OAuth2TokenStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth2TokenStorage.swift; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 				046444682D525A30004E5ACE /* Ext+UIColor.swift */,
 				04DF49A32D6F29590092A3C7 /* Ext+URLSession.swift */,
 				04A874B12D7ED7F3006D382F /* Decoder+Snake.swift */,
+				04BDBDD52DA2BE67000C4117 /* NetworkErrorType.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -335,6 +338,7 @@
 				04A874B22D7ED7F3006D382F /* Decoder+Snake.swift in Sources */,
 				0430A81D2D4E5F2F00142472 /* ImagesListCell.swift in Sources */,
 				04DF49972D6F18580092A3C7 /* OAuth2Service.swift in Sources */,
+				04BDBDD62DA2BE67000C4117 /* NetworkErrorType.swift in Sources */,
 				04A874AC2D79ADB7006D382F /* Profile.swift in Sources */,
 				04A874AA2D79A93F006D382F /* ProfileService.swift in Sources */,
 				04A874B42D7ED830006D382F /* ProfileImage.swift in Sources */,
