@@ -51,7 +51,6 @@ final class ImagesListService {
             
             do {
                 let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
                 decoder.dateDecodingStrategy = .iso8601
 
                 let photoResults = try decoder.decode([PhotoResult].self, from: data)
