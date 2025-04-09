@@ -9,7 +9,7 @@ final class ProfileImageService {
     // MARK: - Private Props
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
-    private let storage = OAuth2TokenStorage()
+    private let storage = OAuth2TokenStorage.shared
     private let decoder = SnakeCaseJSONDecoder()
     private(set) var avatarURL: String?
     private enum AuthServiceError: Error {

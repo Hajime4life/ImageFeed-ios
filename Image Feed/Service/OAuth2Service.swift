@@ -10,15 +10,14 @@ final class OAuth2Service {
     // MARK: - Public Props
     static let shared = OAuth2Service()
 
-        var authToken: String? {
-            get {
-                OAuth2TokenStorage().token
-            }
-            set {
-                OAuth2TokenStorage().token = newValue
-            }
+    var authToken: String? {
+        get {
+            OAuth2TokenStorage.shared.token
         }
-
+        set {
+            OAuth2TokenStorage.shared.token = newValue
+        }
+    }
 
     // MARK: - Private Props
     private enum OAuth2ServiceConstants {
@@ -80,7 +79,7 @@ final class OAuth2Service {
     // MARK: - Private Methods
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: OAuth2ServiceConstants.unsplashGetTokenURLString) else {
-            preconditionFailure("Invalide sheme or host name")
+            preconditionFailure("Invalid scheme or host name")
         }
         
         urlComponents.queryItems = [

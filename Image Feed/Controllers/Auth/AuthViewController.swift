@@ -27,7 +27,7 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
     }()
     
     private let oauth2Service = OAuth2Service.shared
-    private let storage = OAuth2TokenStorage()
+    private let storage = OAuth2TokenStorage.shared
     
     // MARK: - Overrides Methods
     override func viewDidLoad() {

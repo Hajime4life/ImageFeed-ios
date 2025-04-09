@@ -34,7 +34,7 @@ final class SingleImageViewController: UIViewController {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
-
+    
     // MARK: - Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,13 +62,13 @@ final class SingleImageViewController: UIViewController {
             switch result {
             case .success(let value):
                 self.image = value.image
-            case .failure(let error):
+            case .failure(_):
                 self.hideLoadingView()
                 self.showAlert()
             }
         }
     }
-
+    
     // MARK: - Private Methods
     @objc private func didTapBackButton(_ sender: Any) {
         dismiss(animated: true, completion: nil)

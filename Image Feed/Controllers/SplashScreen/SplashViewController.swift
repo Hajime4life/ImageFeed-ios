@@ -7,7 +7,7 @@ final class SplashViewController: UIViewController, AuthViewControllerDelegate {
     private let profileImageService = ProfileImageService.shared
     private let profileService = ProfileService.shared
     private let oauth2Service = OAuth2Service.shared
-    private let storage = OAuth2TokenStorage()
+    private let storage = OAuth2TokenStorage.shared
     private enum SplashViewControllerConstants {
         static let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     }
@@ -119,7 +119,7 @@ final class SplashViewController: UIViewController, AuthViewControllerDelegate {
     private func fetchProfileImage(username: String) {
         profileImageService.fetchImageURL(with: username) { result in
             switch result {
-            case .success(let imageURL):
+            case .success(let _):
                 print("Profile loaded")
             case .failure(let error):
                 print("Error - fetch image error \(error)")

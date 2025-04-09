@@ -1,13 +1,19 @@
 import Foundation
+import SwiftKeychainWrapper
 
-final class ImagesListService {
+final class ImagesListService: ImagesListServiceProtocol {
     
     // MARK: - Private Props
     private(set) var photos: [Photo] = []
     private var lastLoadedPage: Int?
     private var isLoading = false
     private var currentTask: URLSessionTask?
-    private let storage = OAuth2TokenStorage()
+    private let storage = OAuth2TokenStorage.shared
+    private let jsonDecoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return decoder
+    }()
     
     // MARK: - Public Props
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
@@ -32,7 +38,7 @@ final class ImagesListService {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = HTTPMethod.get.rawValue
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
@@ -50,18 +56,14 @@ final class ImagesListService {
             guard let data = data else { return }
             
             do {
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .iso8601
-
-                let photoResults = try decoder.decode([PhotoResult].self, from: data)
+                let photoResults = try self.jsonDecoder.decode([PhotoResult].self, from: data)
                 
                 let newPhotos = photoResults.compactMap { Photo(from: $0) }
                 
                 DispatchQueue.main.async {
                     let uniquePhotos = newPhotos.filter { newPhoto in
-                            !self.photos.contains { $0.id == newPhoto.id }
-                        }
-                        
+                        !self.photos.contains { $0.id == newPhoto.id }
+                    }
                     
                     self.photos.append(contentsOf: uniquePhotos)
                     self.lastLoadedPage = nextPage
@@ -72,10 +74,10 @@ final class ImagesListService {
                     )
                 }
             } catch {
-                print("Error -  decode failed: \(error)")
-                    if let jsonString = String(data: data, encoding: .utf8) {
-                        print("JSON: \(jsonString)")
-                    }
+                print("Error - decode failed: \(error)")
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    print("JSON: \(jsonString)")
+                }
                 return
             }
         }
@@ -84,7 +86,7 @@ final class ImagesListService {
         task.resume()
     }
     
-    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
+    func changeLike(photoId: String, isLike: Bool, completion: @escaping (Result<Void, Error>) -> Void) {
         guard !isLoading, currentTask == nil else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Request already in progress"])))
             return
@@ -102,7 +104,7 @@ final class ImagesListService {
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = isLike ? "POST" : "DELETE"
+        request.httpMethod = isLike ? HTTPMethod.post.rawValue : HTTPMethod.delete.rawValue
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
@@ -111,7 +113,6 @@ final class ImagesListService {
                 self.isLoading = false
                 self.currentTask = nil
             }
-            
             if let error = error {
                 DispatchQueue.main.async {
                     completion(.failure(error))
@@ -151,4 +152,12 @@ final class ImagesListService {
         currentTask = task
         task.resume()
     }
+}
+
+// MARK: - ImageListServiceProtocol
+protocol ImagesListServiceProtocol {
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage()
+    func changeLike(photoId: String, isLike: Bool, completion: @escaping (Result<Void, Error>) -> Void)
+    static var didChangeNotification: Notification.Name { get }
 }

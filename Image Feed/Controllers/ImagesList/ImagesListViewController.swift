@@ -2,11 +2,22 @@ import UIKit
 import Kingfisher
 
 final class ImagesListViewController: UIViewController {
-   
+    
     // MARK: - Private Props
     private var tableView: UITableView?
-    private let imagesListService = ImagesListService()
+    private let imagesListService: ImagesListServiceProtocol
     private var photos: [Photo] = []
+    
+    // MARK: - Init's
+    init(imagesListService: ImagesListServiceProtocol = ImagesListService()) {
+        self.imagesListService = imagesListService
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     
     // MARK: - Overrides
     override func viewDidLoad() {
@@ -81,7 +92,7 @@ final class ImagesListViewController: UIViewController {
 // MARK: - UITableViewDataSource
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photos.count
+        photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -142,14 +153,14 @@ extension ImagesListViewController: ImagesListCellDelegate {
         
         UIBlockingProgressHUD.show()
         imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
             guard let self = self else { return }
             switch result {
             case .success:
                 self.photos = self.imagesListService.photos
                 cell.setIsLiked(self.photos[indexPath.row].isLiked)
-                UIBlockingProgressHUD.dismiss()
             case .failure(let error):
-                UIBlockingProgressHUD.dismiss()
                 self.showAlert(for: error)
             }
         }

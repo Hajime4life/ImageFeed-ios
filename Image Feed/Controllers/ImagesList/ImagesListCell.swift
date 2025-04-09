@@ -11,7 +11,7 @@ final class ImagesListCell: UITableViewCell {
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "d MMMM yyyy"
-        formatter.locale = Locale(identifier: "ru_RU") 
+        formatter.locale = Locale(identifier: "ru_RU")
         return formatter
     }()
     
@@ -42,9 +42,13 @@ final class ImagesListCell: UITableViewCell {
     }
     
     func configure(with photo: Photo) {
+        if let createdAt = photo.createdAt {
+            dateLabel.text = dateFormatter.string(from: createdAt)
+        } else {
+            dateLabel.text = "Дата неизвестна"
+        }
         
-            dateLabel.text = photo.createdAt != nil ? dateFormatter.string(from: photo.createdAt!) : "Дата неизвестна"
-            setIsLiked(photo.isLiked)
+        setIsLiked(photo.isLiked)
         
         guard let url = URL(string: photo.regularImageURL) else {
             print("Error - incorrect image URL: \(photo.regularImageURL)")
@@ -99,7 +103,7 @@ final class ImagesListCell: UITableViewCell {
             imageCellView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4)
         ])
     }
-
+    
     private func setDateLabel() {
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
         dateLabel.textColor = .white
@@ -111,7 +115,7 @@ final class ImagesListCell: UITableViewCell {
             dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
     }
-
+    
     
     private func setLikeButton() {
         likeButton.translatesAutoresizingMaskIntoConstraints = false
