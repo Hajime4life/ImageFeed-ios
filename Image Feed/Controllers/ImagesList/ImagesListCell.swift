@@ -83,6 +83,7 @@ final class ImagesListCell: UITableViewCell {
     private func setCellUI() {
         backgroundColor = #colorLiteral(red: 0.1001180634, green: 0.1101232544, blue: 0.1355511546, alpha: 1)
         contentView.backgroundColor = .clear
+        selectionStyle = .none
         setImageCellView()
         setDateLabel()
         setLikeButton()
@@ -115,7 +116,6 @@ final class ImagesListCell: UITableViewCell {
             dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
     }
-    
     
     private func setLikeButton() {
         likeButton.translatesAutoresizingMaskIntoConstraints = false

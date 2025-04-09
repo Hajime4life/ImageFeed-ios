@@ -221,6 +221,7 @@ final class SingleImageViewController: UIViewController {
     
     private func showLoadingView() {
         loadingView.isHidden = false
+        UIBlockingProgressHUD.show()
         if let backButton = backButton {
             view.bringSubviewToFront(backButton)
         }
@@ -228,6 +229,7 @@ final class SingleImageViewController: UIViewController {
     
     private func hideLoadingView() {
         loadingView.isHidden = true
+        UIBlockingProgressHUD.dismiss()
     }
 }
 

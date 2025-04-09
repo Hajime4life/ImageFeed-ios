@@ -66,7 +66,7 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
         NSLayoutConstraint.activate([
             enterButton.widthAnchor.constraint(equalToConstant: 343),
             enterButton.heightAnchor.constraint(equalToConstant: 48),
-            enterButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            enterButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             enterButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 640)
         ])
         
