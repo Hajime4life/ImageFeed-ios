@@ -2,6 +2,9 @@ import Foundation
 import SwiftKeychainWrapper
 
 final class OAuth2TokenStorage {
+    static let shared = OAuth2TokenStorage()
+    
+    private init() {}
     
     var token: String? {
         get {
@@ -9,12 +12,19 @@ final class OAuth2TokenStorage {
             return token
         }
         set {
-            guard let token = newValue else { preconditionFailure("token doesn't exist") }
-            let isSuccess = KeychainWrapper.standard.set(token, forKey: Keys.token.rawValue)
-            guard isSuccess else { preconditionFailure("token not saved")}
+            if let token = newValue {
+                let isSuccess = KeychainWrapper.standard.set(token, forKey: Keys.token.rawValue)
+                guard isSuccess else { preconditionFailure("Token not saved") }
+            } else {
+                clearToken()
+            }
         }
     }
-
+    
+    func clearToken() {
+        KeychainWrapper.standard.removeObject(forKey: Keys.token.rawValue)
+    }
+    
     private enum Keys: String {
         case token = "Auth token"
     }

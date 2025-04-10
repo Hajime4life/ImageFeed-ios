@@ -12,13 +12,13 @@ final class OAuth2Service {
 
     var authToken: String? {
         get {
-            OAuth2TokenStorage().token
+            OAuth2TokenStorage.shared.token
         }
         set {
-            OAuth2TokenStorage().token = newValue
+            OAuth2TokenStorage.shared.token = newValue
         }
     }
-    
+
     // MARK: - Private Props
     private enum OAuth2ServiceConstants {
         static let unsplashGetTokenURLString = "https://unsplash.com/oauth/token"
@@ -31,6 +31,10 @@ final class OAuth2Service {
     private init() {}
     
     // MARK: - Public Methods
+    func clearAuthToken() {
+        authToken = nil
+    }
+    
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
         guard lastCode != code else {
@@ -75,7 +79,7 @@ final class OAuth2Service {
     // MARK: - Private Methods
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: OAuth2ServiceConstants.unsplashGetTokenURLString) else {
-            preconditionFailure("Invalide sheme or host name")
+            preconditionFailure("Invalid scheme or host name")
         }
         
         urlComponents.queryItems = [

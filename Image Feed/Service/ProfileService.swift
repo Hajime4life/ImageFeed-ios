@@ -9,7 +9,7 @@ final class ProfileService {
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private var lastToken: String?
-    private let storage = OAuth2TokenStorage()
+    private let storage = OAuth2TokenStorage.shared
     private(set) var profile: Profile?
     
     private enum AuthServiceError: Error {
@@ -24,7 +24,7 @@ final class ProfileService {
     func fetchProfile(with token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         assert(Thread.isMainThread)
         guard lastToken != token else {
-            print("ProfileService Error - Invalid request: Duplicate token")
+            print("Error - Invalid request: Duplicate token")
             completion(.failure(AuthServiceError.invalidRequest))
             return
         }
