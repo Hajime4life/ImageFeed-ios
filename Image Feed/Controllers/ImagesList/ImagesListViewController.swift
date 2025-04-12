@@ -9,7 +9,7 @@ final class ImagesListViewController: UIViewController {
     private var photos: [Photo] = []
     
     // MARK: - Init's
-    init(imagesListService: ImagesListServiceProtocol = ImagesListService()) {
+    init(imagesListService: ImagesListServiceProtocol = ImagesListService(authConfig: .standard)) {
         self.imagesListService = imagesListService
         super.init(nibName: nil, bundle: nil)
     }

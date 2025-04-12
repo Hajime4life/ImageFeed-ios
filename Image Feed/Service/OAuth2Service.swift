@@ -6,7 +6,6 @@ enum AuthServiceError: Error {
 }
 
 final class OAuth2Service {
-    
     // MARK: - Public Props
     static let shared = OAuth2Service()
 
@@ -20,15 +19,15 @@ final class OAuth2Service {
     }
 
     // MARK: - Private Props
-    private enum OAuth2ServiceConstants {
-        static let unsplashGetTokenURLString = "https://unsplash.com/oauth/token"
-    }
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private var lastCode: String?
+    private let authConfig: AuthConfiguration
     
     // MARK: - Inits
-    private init() {}
+    private init(authConfig: AuthConfiguration = .standard) {
+        self.authConfig = authConfig
+    }
     
     // MARK: - Public Methods
     func clearAuthToken() {
@@ -78,14 +77,14 @@ final class OAuth2Service {
     
     // MARK: - Private Methods
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
-        guard var urlComponents = URLComponents(string: OAuth2ServiceConstants.unsplashGetTokenURLString) else {
+        guard var urlComponents = URLComponents(string: authConfig.unsplashGetTokenURLString) else {
             preconditionFailure("Invalid scheme or host name")
         }
         
         urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: Constants.accessKey),
-            URLQueryItem(name: "client_secret", value: Constants.secretKey),
-            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
+            URLQueryItem(name: "client_id", value: authConfig.accessKey),
+            URLQueryItem(name: "client_secret", value: authConfig.secretKey),
+            URLQueryItem(name: "redirect_uri", value: authConfig.redirectURI),
             URLQueryItem(name: "code", value: code),
             URLQueryItem(name: "grant_type", value: "authorization_code")
         ]

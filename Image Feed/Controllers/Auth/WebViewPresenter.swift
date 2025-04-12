@@ -11,26 +11,24 @@ public protocol WebViewPresenterProtocol {
 final class WebViewPresenter: WebViewPresenterProtocol {
     weak var view: WebViewViewControllerProtocol?
     weak var delegate: WebViewViewControllerDelegate?
+    private let authConfig: AuthConfiguration
     
-    private enum WebViewConstants {
-        static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
-    }
-    
-    init(view: WebViewViewControllerProtocol, delegate: WebViewViewControllerDelegate?) {
+    init(view: WebViewViewControllerProtocol, delegate: WebViewViewControllerDelegate?, authConfig: AuthConfiguration = .standard) {
         self.view = view
         self.delegate = delegate
+        self.authConfig = authConfig
     }
     
     func viewDidLoad() {
-        guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
+        guard var urlComponents = URLComponents(string: authConfig.authURLString) else {
             return
         }
         
         urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: Constants.accessKey),
-            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
+            URLQueryItem(name: "client_id", value: authConfig.accessKey),
+            URLQueryItem(name: "redirect_uri", value: authConfig.redirectURI),
             URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "scope", value: Constants.accessScope)
+            URLQueryItem(name: "scope", value: authConfig.accessScope)
         ]
         
         guard let url = urlComponents.url else {

@@ -35,7 +35,7 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
     @objc
     private func didEnterButtonTapped() {
         let webViewViewController = WebViewViewController()
-        let webViewPresenter = WebViewPresenter(view: webViewViewController, delegate: self)
+        let webViewPresenter = WebViewPresenter(view: webViewViewController, delegate: self, authConfig: .standard) /// тут можно поменять конфиг на второй
         webViewViewController.presenter = webViewPresenter
         webViewPresenter.view = webViewViewController
         webViewViewController.delegate = self

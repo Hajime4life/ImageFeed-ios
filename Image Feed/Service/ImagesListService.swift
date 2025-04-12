@@ -1,6 +1,13 @@
 import Foundation
 import SwiftKeychainWrapper
 
+// MARK: - ImageListServiceProtocol
+protocol ImagesListServiceProtocol {
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage()
+    func changeLike(photoId: String, isLike: Bool, completion: @escaping (Result<Void, Error>) -> Void)
+}
+
 final class ImagesListService: ImagesListServiceProtocol {
     
     // MARK: - Private Props
@@ -14,9 +21,15 @@ final class ImagesListService: ImagesListServiceProtocol {
         decoder.dateDecodingStrategy = .iso8601
         return decoder
     }()
+    private let authConfig: AuthConfiguration
     
     // MARK: - Public Props
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
+    
+    // MARK: - Private Init's
+    public init(authConfig: AuthConfiguration = .standard) {
+        self.authConfig = authConfig
+    }
     
     // MARK: - Public Methods
     func fetchPhotosNextPage() {
@@ -31,7 +44,7 @@ final class ImagesListService: ImagesListServiceProtocol {
             return
         }
         
-        let urlString = "\(Constants.unsplashGetPhotosResultsURLString)?page=\(nextPage)&per_page=10"
+        let urlString = "\(authConfig.unsplashGetPhotosResultsURLString)?page=\(nextPage)&per_page=10"
         guard let url = URL(string: urlString) else {
             isLoading = false
             return
@@ -97,7 +110,7 @@ final class ImagesListService: ImagesListServiceProtocol {
             return
         }
         
-        let urlString = "\(Constants.unsplashGetPhotosResultsURLString)/\(photoId)/like"
+        let urlString = "\(authConfig.unsplashGetPhotosResultsURLString)/\(photoId)/like"
         guard let url = URL(string: urlString) else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
             return
@@ -152,12 +165,4 @@ final class ImagesListService: ImagesListServiceProtocol {
         currentTask = task
         task.resume()
     }
-}
-
-// MARK: - ImageListServiceProtocol
-protocol ImagesListServiceProtocol {
-    var photos: [Photo] { get }
-    func fetchPhotosNextPage()
-    func changeLike(photoId: String, isLike: Bool, completion: @escaping (Result<Void, Error>) -> Void)
-    static var didChangeNotification: Notification.Name { get }
 }

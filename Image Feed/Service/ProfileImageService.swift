@@ -1,7 +1,6 @@
 import Foundation
 
 final class ProfileImageService {
-    
     // MARK: - Public Props
     static let shared = ProfileImageService()
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
@@ -12,13 +11,17 @@ final class ProfileImageService {
     private let storage = OAuth2TokenStorage.shared
     private let decoder = SnakeCaseJSONDecoder()
     private(set) var avatarURL: String?
+    private let authConfig: AuthConfiguration
+    
     private enum AuthServiceError: Error {
         case invalidRequest
     }
     
-    // MARK: - Private Initializer
-    private init() {}
-
+    // MARK: - Private Init's
+    private init(authConfig: AuthConfiguration = .standard) {
+        self.authConfig = authConfig
+    }
+    
     // MARK: - Public Methods
     func fetchImageURL(with username: String, completion: @escaping (Result<String, any Error>) -> Void) {
         assert(Thread.isMainThread)
@@ -57,7 +60,7 @@ final class ProfileImageService {
     }
     
     func makeProfileResultRequest(username: String) -> URLRequest? {
-        guard let url = URL(string: Constants.unsplashGetProfileImageURLString + username) else {
+        guard let url = URL(string: authConfig.unsplashGetProfileImageURLString + username) else {
             assertionFailure("Cant make URL")
             return nil
         }
