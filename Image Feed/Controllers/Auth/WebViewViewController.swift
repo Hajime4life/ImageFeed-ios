@@ -2,43 +2,54 @@ import Foundation
 import UIKit
 @preconcurrency import WebKit
 
-final class WebViewViewController: UIViewController, WKNavigationDelegate {
-    
-    // MARK: - Public Props
+public protocol WebViewViewControllerProtocol: AnyObject {
+    var presenter: WebViewPresenterProtocol? { get set }
+    func load(request: URLRequest)
+    func setProgressValue(_ newValue: Float)
+    func setProgressHidden(_ isHidden: Bool)
+}
+
+protocol WebViewViewControllerDelegate: AnyObject {
+    func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
+    func webViewViewControllerDidCancel(_ vc: WebViewViewController)
+}
+
+final class WebViewViewController: UIViewController, WKNavigationDelegate, WebViewViewControllerProtocol {
     weak var delegate: WebViewViewControllerDelegate?
+    var presenter: WebViewPresenterProtocol?
     
-    // MARK: - Private Props
     private var backButton: UIButton?
     private var webView: WKWebView?
     private var progressView: UIProgressView?
-    private var estimatedProgressObservation: NSKeyValueObservation?
-    private enum WebViewConstants {
-        static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
-    }
     
-    // MARK: - Overrides Methods
     override func viewDidLoad() {
         setWebViewController()
         guard let webView else { preconditionFailure("unwrap error webView") }
         super.viewDidLoad()
         view.backgroundColor = #colorLiteral(red: 0.1001180634, green: 0.1101232544, blue: 0.1355511546, alpha: 1)
-        loadAuthView()
         webView.navigationDelegate = self
         addNewKVO()
+        presenter?.viewDidLoad()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        updateProgress()
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == #keyPath(WKWebView.estimatedProgress) {
+            guard let webView else { preconditionFailure("unwrap error webView") }
+            presenter?.didUpdateProgressValue(webView.estimatedProgress)
+        } else {
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
     }
     
-    // MARK: - IB Actions
+    deinit {
+        webView?.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress))
+    }
+    
     @objc
     private func didTapBackButton() {
-        dismiss(animated: true, completion: nil)
+        presenter?.didTapBackButton()
     }
     
-    // MARK: - Public Methods
     func webView(
         _ webView: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
@@ -52,60 +63,31 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
         }
     }
     
-    // MARK: - Private Methods
-    private func addNewKVO() {
+    func load(request: URLRequest) {
         guard let webView else { preconditionFailure("unwrap error webView") }
-        estimatedProgressObservation = webView.observe(
-            \.estimatedProgress,
-             options: [],
-             changeHandler: { [weak self] _, _ in
-                 guard let self else { return }
-                 self.updateProgress()
-             }
-        )
+        webView.load(request)
     }
     
-    private func loadAuthView() {
-        guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
-            return
-        }
+    func setProgressValue(_ newValue: Float) {
+        guard let progressView else { preconditionFailure("unwrap error progressView") }
+        progressView.progress = newValue
+    }
+    
+    func setProgressHidden(_ isHidden: Bool) {
+        guard let progressView else { preconditionFailure("unwrap error progressView") }
+        progressView.isHidden = isHidden
+    }
+    
+    private func addNewKVO() {
         guard let webView else { preconditionFailure("unwrap error webView") }
-        urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: Constants.accessKey),
-            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
-            URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "scope", value: Constants.accessScope)
-        ]
-        
-        guard let url = urlComponents.url else {
-            return
-        }
-        
-        let request = URLRequest(url: url)
-        
-        webView.load(request)
-        updateProgress()
+        webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: [], context: nil)
     }
     
     private func code(from navigationAction: WKNavigationAction) -> String? {
-        if
-            let url = navigationAction.request.url,
-            let urlComponents = URLComponents(string: url.absoluteString),
-            urlComponents.path == "/oauth/authorize/native",
-            let items = urlComponents.queryItems,
-            let codeItem = items.first(where: { $0.name == "code" })
-        {
-            return codeItem.value
-        } else {
-            return nil
+        if let url = navigationAction.request.url {
+            return presenter?.code(from: url)
         }
-    }
-    
-    private func updateProgress() {
-        guard let webView else { preconditionFailure("unwrap error webView") }
-        guard let progressView else { preconditionFailure("unwrap error progressView") }
-        progressView.progress = Float(webView.estimatedProgress)
-        progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
+        return nil
     }
     
     private func setWebViewController() {
@@ -128,7 +110,7 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
     
     private func setBackButton() {
         guard let webView else { preconditionFailure("unwrap error webView") }
-        guard let chevronImage = UIImage(named: "backward_icon") else { preconditionFailure("chevron Image doesn't exist")}
+        guard let chevronImage = UIImage(named: "backward_icon") else { preconditionFailure("chevron Image doesn't exist") }
         
         let backButton = UIButton.systemButton(
             with: chevronImage,
@@ -149,7 +131,7 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
     
     private func setProgressView() {
         guard let webView else { preconditionFailure("unwrap error webView") }
-        guard let backButton = self.backButton else { preconditionFailure("back button doesn't exist")}
+        guard let backButton = self.backButton else { preconditionFailure("back button doesn't exist") }
         let progressView = UIProgressView()
         progressView.tintColor = #colorLiteral(red: 0.1001180634, green: 0.1101232544, blue: 0.1355511546, alpha: 1)
         progressView.translatesAutoresizingMaskIntoConstraints = false
@@ -159,9 +141,4 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
         progressView.topAnchor.constraint(equalTo: backButton.bottomAnchor).isActive = true
         self.progressView = progressView
     }
-}
-
-protocol WebViewViewControllerDelegate: AnyObject {
-    func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
-    func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }

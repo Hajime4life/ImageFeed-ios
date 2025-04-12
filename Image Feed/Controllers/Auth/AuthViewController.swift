@@ -2,10 +2,8 @@ import UIKit
 import ProgressHUD
 
 final class AuthViewController: UIViewController, WebViewViewControllerDelegate {
-    // MARK: - Public Props
     weak var delegate: AuthViewControllerDelegate?
     
-    // MARK: - Private Props
     private lazy var enterButton: UIButton = {
         let button = UIButton()
         button.setTitle("Войти", for: .normal)
@@ -29,19 +27,22 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
     private let oauth2Service = OAuth2Service.shared
     private let storage = OAuth2TokenStorage.shared
     
-    // MARK: - Overrides Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
     }
     
-    // MARK: - IB Actions
     @objc
     private func didEnterButtonTapped() {
-        showWebView()
+        let webViewViewController = WebViewViewController()
+        let webViewPresenter = WebViewPresenter(view: webViewViewController, delegate: self)
+        webViewViewController.presenter = webViewPresenter
+        webViewPresenter.view = webViewViewController
+        webViewViewController.delegate = self
+        webViewViewController.modalPresentationStyle = .fullScreen
+        present(webViewViewController, animated: true)
     }
     
-    // MARK: - Public Methods
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         delegate?.authViewController(self, didAuthenticateWithCode: code)
         UIBlockingProgressHUD.show()
@@ -49,14 +50,6 @@ final class AuthViewController: UIViewController, WebViewViewControllerDelegate 
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         dismiss(animated: true)
-    }
-    
-    // MARK: - Private Methods
-    private func showWebView() {
-        let webViewViewController = WebViewViewController()
-        webViewViewController.delegate = self
-        webViewViewController.modalPresentationStyle = .fullScreen
-        present(webViewViewController, animated: true)
     }
     
     private func setupUI() {
