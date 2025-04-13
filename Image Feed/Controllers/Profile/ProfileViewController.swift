@@ -1,7 +1,8 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+// MARK: - ProfileViewController
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     // MARK: - UI Elements
     private var userPhotoView: UIImageView?
     private var logoutButton: UIButton?
@@ -9,44 +10,60 @@ final class ProfileViewController: UIViewController {
     private var usernameLabel: UILabel?
     private var statusLabel: UILabel?
     
-    // MARK: - Private props
-    private let profileService = ProfileService.shared
-    private let profileImageService = ProfileImageService.shared
-    private var profileImageServiceObserver: NSObjectProtocol?
-    private let storage = OAuth2TokenStorage.shared
+    // MARK: - Private Props
+    private var presenter: ProfilePresenterProtocol!
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        updateProfileDetails()
-        addProfileImageObserver()
-        updateAvatar()
+        presenter.viewDidLoad()
     }
     
-    // MARK: - Actions
-    @objc
-    private func logoutButtonTapped() {
+    // MARK: - Public Methods
+    func configure(_ presenter: ProfilePresenterProtocol) {
+        self.presenter = presenter
+        // Приводим presenter к конкретному типу, чтобы избежать проблем с протоколом
+        if var presenterInstance = presenter as? ProfilePresenter {
+            presenterInstance.view = self
+            self.presenter = presenterInstance
+        }
+    }
+    
+    func updateProfileDetails(name: String, loginName: String, bio: String?) {
+        nameLabel?.text = name
+        usernameLabel?.text = loginName
+        statusLabel?.text = bio
+    }
+    
+    func updateAvatar(url: URL?) {
+        guard let url = url, let imageView = userPhotoView else { return }
+        imageView.kf.indicatorType = .activity
+        let targetSize = CGSize(width: 100, height: 100)
+        let downsamplingProcessor = DownsamplingImageProcessor(size: targetSize)
+        let roundCornerProcessor = RoundCornerImageProcessor(cornerRadius: 35, backgroundColor: UIColor(red: 0.101, green: 0.106, blue: 0.136, alpha: 1.0))
+        imageView.kf.setImage(
+            with: url,
+            options: [
+                .processor(downsamplingProcessor),
+                .processor(roundCornerProcessor)
+            ]
+        )
+    }
+    
+    func showLogoutAlert(completion: @escaping () -> Void) {
         let alertModel = AlertModel(
             title: "Пока, пока!",
             message: "Уверены что хотите выйти?",
             buttonText: "Да",
-            completion: { [weak self] in
-                self?.logout()
-            },
+            completion: completion,
             secondaryButtonText: "Нет",
-            secondaryButtonCompletion: {
-                // тут наверно пусто, не знаю
-            }
+            secondaryButtonCompletion: {}
         )
         AlertPresenter.showAlert(model: alertModel, vc: self)
     }
     
-    
-    // MARK: - Private methods
-    private func logout() {
-        storage.clearToken()
-        HTTPCookieStorage.shared.removeCookies(since: .distantPast)
+    func switchToSplashScreen() {
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid window configuration")
             return
@@ -55,47 +72,9 @@ final class ProfileViewController: UIViewController {
         window.rootViewController = splashViewController
     }
     
-    private func updateProfileDetails() {
-        guard let profile = profileService.profile else {
-            return
-        }
-        self.nameLabel?.text = profile.name
-        self.usernameLabel?.text = profile.loginName
-        self.statusLabel?.text = profile.bio
-    }
-    
-    private func addProfileImageObserver() {
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main,
-                using: { [weak self] _ in
-                    guard let self = self else { return }
-                    self.updateAvatar()
-                }
-            )
-    }
-    
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL),
-            let imageView = userPhotoView
-        else { return }
-        
-        imageView.kf.indicatorType = .activity
-        let targetSize = CGSize(width: 100, height: 100)
-        let downsamplingProcessor = DownsamplingImageProcessor(size: targetSize)
-        let roundCornerProcessor = RoundCornerImageProcessor(cornerRadius: 35, backgroundColor: UIColor(red: 0.101, green: 0.106, blue: 0.136, alpha: 1.0))
-        
-        imageView.kf.setImage(
-            with: url,
-            options: [
-                .processor(downsamplingProcessor),
-                .processor(roundCornerProcessor)
-            ]
-        )
+    // MARK: - Actions
+    @objc private func logoutButtonTapped() {
+        presenter.didTapLogoutButton()
     }
     
     // MARK: - UI Configuration
@@ -123,8 +102,6 @@ final class ProfileViewController: UIViewController {
         ])
         
         self.userPhotoView = imageView
-        
-        updateAvatar()
     }
     
     private func setupLogoutButton() {

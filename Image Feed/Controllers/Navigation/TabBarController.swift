@@ -1,22 +1,31 @@
 import UIKit
 
+// MARK: - TabBarController
 final class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        let imagesListViewController = ImagesListViewController()
-        let profileViewController = ProfileViewController()
         
-        profileViewController.tabBarItem = UITabBarItem(
-            title: "",
-            image: UIImage(named: "tab_profile_active"),
-            selectedImage: nil
-        )
+        // ImagesListViewController
+        let imagesListViewController = ImagesListViewController()
         imagesListViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "tab_editorial_active"),
             selectedImage: nil
         )
+        
+        // ProfileViewController
+        let profileViewController = ProfileViewController()
+        let profilePresenter = ProfilePresenter()
+        profileViewController.configure(profilePresenter)
+        profileViewController.tabBarItem = UITabBarItem(
+            title: "",
+            image: UIImage(named: "tab_profile_active"),
+            selectedImage: nil
+        )
+        
         self.viewControllers = [imagesListViewController, profileViewController]
+        
+        
         
         setUITabBarAppearance()
     }
