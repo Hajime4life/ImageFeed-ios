@@ -23,7 +23,6 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     // MARK: - Public Methods
     func configure(_ presenter: ProfilePresenterProtocol) {
         self.presenter = presenter
-        // Приводим presenter к конкретному типу, чтобы избежать проблем с протоколом
         if var presenterInstance = presenter as? ProfilePresenter {
             presenterInstance.view = self
             self.presenter = presenterInstance

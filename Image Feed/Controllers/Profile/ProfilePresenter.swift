@@ -17,9 +17,7 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     }
     
     func didTapLogoutButton() {
-        // Показываем алерт с подтверждением выхода
         view?.showLogoutAlert { [weak self] in
-            // После подтверждения очищаем токен и куки, затем переходим на SplashViewController
             OAuth2TokenStorage.shared.clearToken()
             HTTPCookieStorage.shared.removeCookies(since: .distantPast)
             self?.view?.switchToSplashScreen()

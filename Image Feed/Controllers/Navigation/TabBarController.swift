@@ -7,6 +7,8 @@ final class TabBarController: UITabBarController {
         
         // ImagesListViewController
         let imagesListViewController = ImagesListViewController()
+        let imagesListPresenter = ImagesListPresenter()
+        imagesListViewController.configure(imagesListPresenter)
         imagesListViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "tab_editorial_active"),
@@ -24,8 +26,6 @@ final class TabBarController: UITabBarController {
         )
         
         self.viewControllers = [imagesListViewController, profileViewController]
-        
-        
         
         setUITabBarAppearance()
     }

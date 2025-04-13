@@ -1,41 +1,51 @@
 import UIKit
 import Kingfisher
 
-final class ImagesListViewController: UIViewController {
-    
+final class ImagesListViewController: UIViewController, ImagesListViewControllerProtocol {
     // MARK: - Private Props
     private var tableView: UITableView?
-    private let imagesListService: ImagesListServiceProtocol
+    private var presenter: ImagesListPresenterProtocol!
     private var photos: [Photo] = []
     
-    // MARK: - Init's
-    init(imagesListService: ImagesListServiceProtocol = ImagesListService(authConfig: .standard)) {
-        self.imagesListService = imagesListService
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
-    // MARK: - Overrides
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setTableView()
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(updateTableViewAnimated),
-            name: ImagesListService.didChangeNotification,
-            object: nil
-        )
-        
-        imagesListService.fetchPhotosNextPage()
+        presenter.viewDidLoad()
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
+    // MARK: - Public Methods
+    func configure(_ presenter: ImagesListPresenterProtocol) {
+        var mutablePresenter = presenter
+        self.presenter = mutablePresenter
+        mutablePresenter.view = self
+    }
+    
+    func updateTableViewAnimated(oldCount: Int, newCount: Int) {
+        let oldCount = photos.count
+        photos = (presenter as! ImagesListPresenter).photos
+        let newCount = photos.count
+        
+        if oldCount != newCount {
+            tableView?.performBatchUpdates({
+                let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: 0) }
+                tableView?.insertRows(at: indexPaths, with: .automatic)
+            }, completion: nil)
+        } else {
+            tableView?.reloadData()
+        }
+    }
+    
+    func showAlert(for error: Error) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let alertModel = AlertModel(
+                title: "Ошибка",
+                message: "Не удалось изменить лайк: \(error.localizedDescription)",
+                buttonText: "OK"
+            ) { }
+            AlertPresenter.showAlert(model: alertModel, vc: self)
+        }
     }
     
     // MARK: - Private Methods
@@ -59,33 +69,6 @@ final class ImagesListViewController: UIViewController {
         ])
         
         self.tableView = tableView
-    }
-    
-    @objc private func updateTableViewAnimated() {
-        let oldCount = photos.count
-        photos = imagesListService.photos
-        let newCount = photos.count
-        
-        if oldCount != newCount {
-            tableView?.performBatchUpdates({
-                let indexPaths = (oldCount..<newCount).map { IndexPath(row: $0, section: 0) }
-                tableView?.insertRows(at: indexPaths, with: .automatic)
-            }, completion: nil)
-        } else {
-            tableView?.reloadData()
-        }
-    }
-    
-    private func showAlert(for error: Error) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            let alertModel = AlertModel(
-                title: "Ошибка",
-                message: "Не удалось изменить лайк: \(error.localizedDescription)",
-                buttonText: "OK"
-            ) { }
-            AlertPresenter.showAlert(model: alertModel, vc: self)
-        }
     }
 }
 
@@ -128,7 +111,7 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row + 1 == photos.count {
-            imagesListService.fetchPhotosNextPage()
+            presenter.fetchPhotosNextPage()
         }
     }
     
@@ -152,16 +135,16 @@ extension ImagesListViewController: ImagesListCellDelegate {
         let photo = photos[indexPath.row]
         
         UIBlockingProgressHUD.show()
-        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+        presenter.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             
             guard let self = self else { return }
             switch result {
             case .success:
-                self.photos = self.imagesListService.photos
+                self.photos = (self.presenter as! ImagesListPresenter).photos
                 cell.setIsLiked(self.photos[indexPath.row].isLiked)
-            case .failure(let error):
-                self.showAlert(for: error)
+            case .failure:
+                break // в презентере
             }
         }
     }
