@@ -72,7 +72,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     }
     
     // MARK: - Actions
-    @objc private func logoutButtonTapped() {
+    @objc func logoutButtonTapped() {
         presenter.didTapLogoutButton()
     }
     

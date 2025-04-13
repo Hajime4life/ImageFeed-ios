@@ -27,7 +27,7 @@ struct AuthConfiguration {
         self.unsplashGetTokenURLString = "https://unsplash.com/oauth/token"
     }
 
-    static var standard: AuthConfiguration {
+    static var alternative: AuthConfiguration {
         return AuthConfiguration(
             accessKey: "84rDmewcbI1p1KYaF42hCA9hnbrqHNlNpGLtV38EVtA",
             secretKey: "Jha29y4gzA018p1Qh2ejEuDiBXz3AfVi8bYCy9Y96aQ",
@@ -38,7 +38,7 @@ struct AuthConfiguration {
         )
     }
 
-    static var alternative: AuthConfiguration {
+    static var standard: AuthConfiguration {
         return AuthConfiguration(
             accessKey: "RFR4QAr3pBOFn-ZmRg0EUPSPi-poE-YE2eRdrejWtrM",
             secretKey: "YDEbifXoGRayRLTYOad0-GClQX2-5HycpfzLLBVyt0s",
