@@ -2,7 +2,7 @@
 import XCTest
 
 // MARK: - WebViewPresenterSpy
-final class WebViewPresenterSpy: WebViewPresenterProtocol {
+final class WebViewPresenterSpy: WebViewPresenterProtocol { /// По какой-то причине тест не видит этот класс в отдельном файле. Делал его и public, не помогло
     // MARK: - Public Props
     var viewDidLoadCalled: Bool = false
     var view: WebViewViewControllerProtocol?
@@ -12,17 +12,13 @@ final class WebViewPresenterSpy: WebViewPresenterProtocol {
         viewDidLoadCalled = true
     }
     
-    func didUpdateProgressValue(_ newValue: Double) {
-        // Заглушка, не используется в тесте
-    }
+    func didUpdateProgressValue(_ newValue: Double) {}
     
     func code(from url: URL) -> String? {
         return nil
     }
     
-    func didTapBackButton() {
-        // Заглушка, не используется в тесте
-    }
+    func didTapBackButton() {}
 }
 
 // MARK: - WebViewTests
@@ -30,7 +26,6 @@ final class WebViewTests: XCTestCase {
     func testViewControllerCallsViewDidLoad() {
         //given
         let viewController = WebViewViewController()
-        let authHelper = AuthHelper()
         let presenter = WebViewPresenterSpy()
         viewController.presenter = presenter
         presenter.view = viewController
@@ -55,6 +50,22 @@ final class WebViewTests: XCTestCase {
         
         //then
         XCTAssertTrue(viewController.loadRequestCalled)
+    }
+    
+    func testProgressVisibleWhenLessThenOne() {
+        //given
+        let viewController = WebViewViewControllerSpy()
+        let authHelper = AuthHelper()
+        let presenter = WebViewPresenter(view: viewController, delegate: nil, authHelper: authHelper)
+        viewController.presenter = presenter
+        presenter.view = viewController
+        let progress: Double = 0.6
+        
+        //when
+        presenter.didUpdateProgressValue(progress)
+        
+        //then
+        XCTAssertFalse(viewController.setProgressHiddenCalledWith ?? true)
     }
     
     func testProgressHiddenWhenOne() {
@@ -98,14 +109,12 @@ final class WebViewTests: XCTestCase {
         //given
         let authHelper = AuthHelper()
         
-        // Сценарий 1: Корректный URL с кодом
         let validURLString = "https://unsplash.com/oauth/authorize/native?code=abc123"
         guard let validURL = URL(string: validURLString) else {
             XCTFail("Failed to create valid URL")
             return
         }
         
-        // Сценарий 2: Некорректный URL (неправильный путь)
         let invalidURLString = "https://unsplash.com/wrong/path?code=abc123"
         guard let invalidURL = URL(string: invalidURLString) else {
             XCTFail("Failed to create invalid URL")

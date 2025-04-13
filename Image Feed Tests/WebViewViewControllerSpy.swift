@@ -12,9 +12,7 @@ final class WebViewViewControllerSpy: WebViewViewControllerProtocol {
         loadRequestCalled = true
     }
     
-    func setProgressValue(_ newValue: Float) {
-        // Заглушка, не используется в тесте
-    }
+    func setProgressValue(_ newValue: Float) {}
     
     func setProgressHidden(_ isHidden: Bool) {
         setProgressHiddenCalledWith = isHidden
