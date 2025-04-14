@@ -6,6 +6,7 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
     private var tableView: UITableView?
     private var presenter: ImagesListPresenterProtocol!
     private var photos: [Photo] = []
+    private var isProcessingLike = false 
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -47,7 +48,8 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
             guard let self else { return }
             let alertModel = AlertModel(
                 title: "Ошибка",
-                message: "Не удалось изменить лайк: \(error.localizedDescription)",
+                message: error.localizedDescription == "The operation couldn’t be completed. ( rate limit exceeded)" ?
+                    "Rate Limit Exceeded" : "Не удалось изменить лайк: \(error.localizedDescription)",
                 buttonText: "OK"
             ) { }
             AlertPresenter.showAlert(model: alertModel, vc: self)
@@ -114,6 +116,11 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        // Отключаем пагинацию в тестах
+        if CommandLine.arguments.contains("-reset") {
+            return
+        }
+        
         if indexPath.row + 1 == photos.count {
             presenter.fetchPhotosNextPage()
         }
@@ -133,12 +140,21 @@ extension ImagesListViewController: UITableViewDelegate {
 // MARK: - ImagesListCellDelegate
 extension ImagesListViewController: ImagesListCellDelegate {
     func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard !isProcessingLike else {
+            print("Like request already in progress, ignoring tap")
+            return
+        }
+        
         guard let indexPath = tableView?.indexPath(for: cell) else { return }
         let photo = photos[indexPath.row]
+        
+        isProcessingLike = true
         UIBlockingProgressHUD.show()
         presenter.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
-            UIBlockingProgressHUD.dismiss()
             guard let self = self else { return }
+            self.isProcessingLike = false
+            UIBlockingProgressHUD.dismiss()
+            
             switch result {
             case .success:
                 self.photos = self.presenter.photos

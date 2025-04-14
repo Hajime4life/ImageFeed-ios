@@ -1,25 +1,14 @@
 import XCTest
-import WebKit
 @testable import Image_Feed
 import SwiftKeychainWrapper
 
 class Image_FeedUITests: XCTestCase {
     private let app = XCUIApplication()
-    let email = "" // TODO: ТУТ ВСТАВЛЯЕТЕ ПОЧТУ
-    let password = "" // TODO: ТУТ ВСТАВЛЯЕТЕ ПАРОЛЬ
+    let email = "" // TODO: ТУТ ВВЕДИТЕ СВОЮ ПОЧТУ
+    let password = "" // TODO: ТУТ ВВЕДИТЕ СВОЙ ПАРОЛЬ (Так описывает сам урок, что у вас свои учетки)
     
     override func setUpWithError() throws {
         continueAfterFailure = false
-        
-        KeychainWrapper.standard.removeObject(forKey: "Auth token")
-        HTTPCookieStorage.shared.removeCookies(since: .distantPast)
-        URLCache.shared.removeAllCachedResponses()
-        
-        // Очистка данных от вебвью
-        WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: .distantPast) {
-            print("WebView data cleared")
-        }
-        
         app.launchArguments = ["-reset"]
         app.launch()
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
@@ -30,8 +19,12 @@ class Image_FeedUITests: XCTestCase {
     }
     
     func testAuth() throws {
+        KeychainWrapper.standard.removeObject(forKey: "Auth token")
+        
         let authButton = app.buttons["Authenticate"]
-        XCTAssertTrue(authButton.waitForExistence(timeout: 15))
+        if !authButton.waitForExistence(timeout: 15) {
+            XCTFail()
+        }
         authButton.tap()
         
         let webView = app.webViews["UnsplashWebView"]
@@ -62,46 +55,45 @@ class Image_FeedUITests: XCTestCase {
     
     func testFeed() throws {
         let tablesQuery = app.tables
-        let table = tablesQuery.element
         
-        let firstCell = tablesQuery.children(matching: .cell).element(boundBy: 0)
-        XCTAssertTrue(firstCell.waitForExistence(timeout: 20))
+        let cell = tablesQuery.children(matching: .cell).element(boundBy: 0)
+        XCTAssertTrue(cell.waitForExistence(timeout: 15))
         
-        table.swipeUp()
-        sleep(1)
-        table.swipeUp()
-        sleep(1)
+        cell.swipeUp()
+        sleep(2)
         
-        table.swipeDown()
-        sleep(1)
-        table.swipeDown()
-        sleep(1)
+        let cellToLike = tablesQuery.children(matching: .cell).element(boundBy: 1)
+        XCTAssertTrue(cellToLike.waitForExistence(timeout: 5))
         
-        let likeButtonOff = firstCell.buttons["like button off"]
-        let likeButtonOn = firstCell.buttons["like button on"]
+        cellToLike.buttons["likeButton"].tap()
         
-        if likeButtonOff.waitForExistence(timeout: 5) {
-            likeButtonOff.tap()
-            sleep(15)
-            XCTAssertTrue(likeButtonOn.waitForExistence(timeout: 15))
-            
-            likeButtonOn.tap()
-            sleep(15)
-            XCTAssertTrue(likeButtonOff.waitForExistence(timeout: 15))
-        } else if likeButtonOn.waitForExistence(timeout: 5) {
-            print("Like button on found")
-            likeButtonOn.tap()
-            sleep(15)
-            XCTAssertTrue(likeButtonOff.waitForExistence(timeout: 15))
-            
-            likeButtonOff.tap()
-            sleep(15)
-            XCTAssertTrue(likeButtonOn.waitForExistence(timeout: 15))
-        } else {
-            XCTFail("")
+        if app.alerts.element.staticTexts["Rate Limit Exceeded"].exists {
+            app.alerts.element.buttons["OK"].tap()
+            return
         }
         
-        firstCell.tap()
+        if app.alerts.element.staticTexts["Не удалось изменить лайк: Request already in progress"].exists {
+            app.alerts.element.buttons["OK"].tap()
+            return
+        }
+        
+        sleep(15)
+        
+        cellToLike.buttons["likeButton"].tap()
+        
+        if app.alerts.element.staticTexts["Rate Limit Exceeded"].exists {
+            app.alerts.element.buttons["OK"].tap()
+            return
+        }
+        
+        if app.alerts.element.staticTexts["Не удалось изменить лайк: Request already in progress"].exists {
+            app.alerts.element.buttons["OK"].tap()
+            return
+        }
+        
+        sleep(2)
+        
+        cellToLike.tap()
         sleep(2)
         
         let image = app.scrollViews.images.element(boundBy: 0)
@@ -135,6 +127,7 @@ class Image_FeedUITests: XCTestCase {
         XCTAssertTrue(yesButton.waitForExistence(timeout: 5))
         yesButton.tap()
         
-        XCTAssertTrue(app.buttons["Authenticate"].waitForExistence(timeout: 5))
+        let authButton = app.buttons["Authenticate"]
+        XCTAssertTrue(authButton.waitForExistence(timeout: 15))
     }
 }

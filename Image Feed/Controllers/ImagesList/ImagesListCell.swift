@@ -32,7 +32,6 @@ final class ImagesListCell: UITableViewCell {
         imageCellView.image = nil
         dateLabel.text = nil
         likeButton.setImage(nil, for: .normal)
-        likeButton.accessibilityIdentifier = "like button off" 
     }
     
     override func layoutSubviews() {
@@ -79,7 +78,6 @@ final class ImagesListCell: UITableViewCell {
     func setIsLiked(_ isLiked: Bool) {
         let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
         likeButton.setImage(likeImage, for: .normal)
-        likeButton.accessibilityIdentifier = isLiked ? "like button on" : "like button off"
     }
     
     private func setCellUI() {
@@ -122,7 +120,7 @@ final class ImagesListCell: UITableViewCell {
     private func setLikeButton() {
         likeButton.translatesAutoresizingMaskIntoConstraints = false
         likeButton.addTarget(self, action: #selector(likeButtonClicked), for: .touchUpInside)
-        likeButton.accessibilityIdentifier = "like button off"
+        likeButton.accessibilityIdentifier = "likeButton"
         contentView.addSubview(likeButton)
         
         NSLayoutConstraint.activate([
