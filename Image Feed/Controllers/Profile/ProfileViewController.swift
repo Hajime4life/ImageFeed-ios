@@ -111,6 +111,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         button.setImage(logoutIcon, for: .normal)
         button.tintColor = UIColor(hex: "#F56B6C")
         button.addTarget(self, action: #selector(logoutButtonTapped), for: .touchUpInside)
+        button.accessibilityIdentifier = "logout button"
         button.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(button)
         
@@ -131,6 +132,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         label.text = ""
         label.textColor = .white
         label.font = .boldSystemFont(ofSize: 23)
+        label.accessibilityIdentifier = "Name Lastname"
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(label)
         
@@ -150,6 +152,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         label.text = ""
         label.textColor = .lightGray
         label.font = .systemFont(ofSize: 13)
+        label.accessibilityIdentifier = "@username"
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(label)
         

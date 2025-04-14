@@ -14,6 +14,7 @@ final class TabBarController: UITabBarController {
             image: UIImage(named: "tab_editorial_active"),
             selectedImage: nil
         )
+        imagesListViewController.tabBarItem.accessibilityIdentifier = "feed tab"
         
         // ProfileViewController
         let profileViewController = ProfileViewController()
@@ -24,6 +25,7 @@ final class TabBarController: UITabBarController {
             image: UIImage(named: "tab_profile_active"),
             selectedImage: nil
         )
+        profileViewController.tabBarItem.accessibilityIdentifier = "profile tab"
         
         self.viewControllers = [imagesListViewController, profileViewController]
         

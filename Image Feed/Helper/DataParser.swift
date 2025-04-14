@@ -13,7 +13,7 @@ struct DateParser {
     
     static func parseDate(from string: String?) -> Date? {
         guard let dateString = string else {
-            print("Дата отсутствует")
+            print("Error - No Date")
             return nil
         }
         
@@ -22,7 +22,7 @@ struct DateParser {
         } else if let date = customFormatter.date(from: dateString) {
             return date
         } else {
-            print("Не удалось распарсить дату: \(dateString)")
+            print("Error - parse date error: \(dateString)")
             return nil
         }
     }

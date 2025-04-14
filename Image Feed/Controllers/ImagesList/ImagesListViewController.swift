@@ -143,8 +143,15 @@ extension ImagesListViewController: ImagesListCellDelegate {
             case .success:
                 self.photos = self.presenter.photos
                 cell.setIsLiked(self.photos[indexPath.row].isLiked)
-            case .failure:
-                break
+            case .failure(let error):
+                print("Error changing like: \(error)")
+                let alertModel = AlertModel(
+                    title: "Ошибка",
+                    message: error.localizedDescription == "The operation couldn’t be completed. ( rate limit exceeded)" ?
+                        "Rate Limit Exceeded" : "Не удалось изменить лайк: \(error.localizedDescription)",
+                    buttonText: "OK"
+                ) { }
+                AlertPresenter.showAlert(model: alertModel, vc: self)
             }
         }
     }

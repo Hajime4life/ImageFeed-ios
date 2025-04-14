@@ -101,6 +101,7 @@ final class ImagesListService: ImagesListServiceProtocol {
     
     func changeLike(photoId: String, isLike: Bool, completion: @escaping (Result<Void, Error>) -> Void) {
         guard !isLoading, currentTask == nil else {
+            print("Request already in progress for photoId: \(photoId)")
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Request already in progress"])))
             return
         }

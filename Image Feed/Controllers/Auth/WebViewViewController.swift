@@ -100,6 +100,7 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate, WebVi
     private func setWebView() {
         let webView = WKWebView()
         webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.accessibilityIdentifier = "UnsplashWebView"
         view.addSubview(webView)
         webView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         webView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
