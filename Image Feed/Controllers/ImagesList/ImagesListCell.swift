@@ -120,6 +120,7 @@ final class ImagesListCell: UITableViewCell {
     private func setLikeButton() {
         likeButton.translatesAutoresizingMaskIntoConstraints = false
         likeButton.addTarget(self, action: #selector(likeButtonClicked), for: .touchUpInside)
+        likeButton.accessibilityIdentifier = "likeButton"
         contentView.addSubview(likeButton)
         
         NSLayoutConstraint.activate([

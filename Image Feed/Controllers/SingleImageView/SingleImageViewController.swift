@@ -124,6 +124,7 @@ final class SingleImageViewController: UIViewController {
             action: #selector(didTapBackButton)
         )
         backButton.tintColor = .white
+        backButton.accessibilityIdentifier = "nav back button white"
         backButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backButton)
         

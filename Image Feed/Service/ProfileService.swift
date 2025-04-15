@@ -1,7 +1,6 @@
 import Foundation
 
 final class ProfileService {
-    
     // MARK: - Public Props
     static let shared = ProfileService()
     
@@ -11,6 +10,7 @@ final class ProfileService {
     private var lastToken: String?
     private let storage = OAuth2TokenStorage.shared
     private(set) var profile: Profile?
+    private let authConfig: AuthConfiguration
     
     private enum AuthServiceError: Error {
         case invalidRequest
@@ -18,7 +18,9 @@ final class ProfileService {
     }
     
     // MARK: - Private Initializer
-    private init() {} 
+    private init(authConfig: AuthConfiguration = .standard) {
+        self.authConfig = authConfig
+    }
     
     // MARK: - Public Methods
     func fetchProfile(with token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
@@ -76,7 +78,7 @@ final class ProfileService {
     
     // MARK: - Private Methods
     private func makeProfileResultRequest(with token: String) -> URLRequest? {
-        guard let url = URL(string: Constants.unsplashGetProfileResultsURLString) else {
+        guard let url = URL(string: authConfig.unsplashGetProfileResultsURLString) else {
             assertionFailure("Invalid URL")
             return nil
         }
